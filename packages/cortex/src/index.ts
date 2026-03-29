@@ -1,5 +1,12 @@
 export { RemediationBackend } from "./backend"
-export { CleanSweepCLIAdapter, SSHAdapter, type SSHAdapterConfig } from "./adapters/index"
+export {
+  CleanSweepCLIAdapter,
+  SSHAdapter,
+  WordPressFileAdapter,
+  type SSHAdapterConfig,
+  type FileEntry,
+  type WordPressFileAdapterConfig,
+} from "./adapters/index"
 export type {
   ScanResult,
   RemediationPlan,
@@ -19,3 +26,12 @@ export type {
   BackendConfig,
   BackendCapability,
 } from "./types"
+export {
+  CortexListFilesTool,
+  CortexReadFileTool,
+  CortexAnalyzeFileTool,
+  CortexSetSiteTool,
+  CortexGetSiteTool,
+  setGlobalSitePath,
+  getGlobalSitePath,
+} from "./cortex-tools/index"
