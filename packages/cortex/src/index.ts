@@ -35,3 +35,4 @@ export {
   setGlobalSitePath,
   getGlobalSitePath,
 } from "./cortex-tools/index"
+export { CortexPlugin, default } from "./plugin"
