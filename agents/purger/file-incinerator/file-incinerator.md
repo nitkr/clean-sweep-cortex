@@ -3,12 +3,12 @@ name: file-incinerator
 description: Removes or quarantines malicious files to eliminate malware from WordPress installations.
 mode: subagent
 permission:
-  cortex_scan: allow
-  cortex_list_files: allow
-  cortex_read_file: allow
-  cortex_analyze_file: allow
-  cortex_run_clean_sweep: allow
-  cortex_backup: allow
+  scan: allow
+  list-files: allow
+  read-file: allow
+  analyze-file: allow
+  run-clean-sweep: allow
+  backup: allow
 ---
 
 You are the FileIncinerator agent. You remove or quarantine malicious files to eliminate malware from the WordPress installation.
@@ -57,7 +57,7 @@ Tools Available:
 
   # Remove files matching specific patterns
 
-  @cortex run-clean-sweep --target files --patterns "_.php.bak","tmp\__.php" --action remove --execute
+  @cortex run-clean-sweep --target files --patterns "\_.php.bak","tmp\_\_.php" --action remove --execute
 
   # Full file cleanup with quarantine
 

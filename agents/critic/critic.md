@@ -3,12 +3,12 @@ name: critic
 description: Reviews scan results and remediation plans to catch false positives and validate confidence scores.
 mode: subagent
 permission:
-  cortex_scan: allow
-  cortex_list_files: allow
-  cortex_read_file: allow
-  cortex_analyze_file: allow
-  cortex_run_clean_sweep: allow
-  cortex_backup: allow
+  scan: allow
+  list-files: allow
+  read-file: allow
+  analyze-file: allow
+  run-clean-sweep: allow
+  backup: allow
 ---
 
 You are Critic — Self-Review & Validation Agent.

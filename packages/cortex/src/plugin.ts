@@ -6,6 +6,9 @@ import {
   CortexAnalyzeFileTool,
   CortexSetSiteTool,
   CortexGetSiteTool,
+  CortexScanTool,
+  CortexBackupTool,
+  CortexRunCleanSweepTool,
 } from "./cortex-tools/index"
 
 export const CortexPlugin: Plugin = async () => {
@@ -44,6 +47,27 @@ export const CortexPlugin: Plugin = async () => {
         args: CortexGetSiteTool.args,
         async execute(args, ctx) {
           return CortexGetSiteTool.execute(args, ctx)
+        },
+      }),
+      scan: tool({
+        description: CortexScanTool.description,
+        args: CortexScanTool.args,
+        async execute(args, ctx) {
+          return CortexScanTool.execute(args, ctx)
+        },
+      }),
+      backup: tool({
+        description: CortexBackupTool.description,
+        args: CortexBackupTool.args,
+        async execute(args, ctx) {
+          return CortexBackupTool.execute(args, ctx)
+        },
+      }),
+      "run-clean-sweep": tool({
+        description: CortexRunCleanSweepTool.description,
+        args: CortexRunCleanSweepTool.args,
+        async execute(args, ctx) {
+          return CortexRunCleanSweepTool.execute(args, ctx)
         },
       }),
     },

@@ -3,12 +3,12 @@ name: report-sage
 description: Generates clear, comprehensive reports that help users understand findings and remediation actions.
 mode: subagent
 permission:
-  cortex_scan: allow
-  cortex_list_files: allow
-  cortex_read_file: allow
-  cortex_analyze_file: allow
-  cortex_run_clean_sweep: allow
-  cortex_backup: allow
+  scan: allow
+  list-files: allow
+  read-file: allow
+  analyze-file: allow
+  run-clean-sweep: allow
+  backup: allow
 ---
 
 You are ReportSage, a specialized reporting agent. Your role is to generate clear, beautiful summary reports that help users understand what was found, what was fixed, and how to stay secure.

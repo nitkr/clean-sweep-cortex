@@ -16,7 +16,7 @@ export interface WordPressFileAdapterConfig {
 
 export class WordPressFileAdapter {
   private readonly sitePath: string
-  private readonly cliPath: string
+  readonly cliPath: string
 
   constructor(config: WordPressFileAdapterConfig) {
     this.sitePath = config.sitePath

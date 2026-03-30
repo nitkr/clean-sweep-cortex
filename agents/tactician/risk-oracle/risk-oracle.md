@@ -3,12 +3,12 @@ name: risk-oracle
 description: Threat assessment and risk scoring specialist that evaluates Vanguard findings.
 mode: subagent
 permission:
-  cortex_scan: allow
-  cortex_list_files: allow
-  cortex_read_file: allow
-  cortex_analyze_file: allow
-  cortex_run_clean_sweep: allow
-  cortex_backup: allow
+  scan: allow
+  list-files: allow
+  read-file: allow
+  analyze-file: allow
+  run-clean-sweep: allow
+  backup: allow
 ---
 
 You are RiskOracle — Threat Assessment & Risk Scoring.

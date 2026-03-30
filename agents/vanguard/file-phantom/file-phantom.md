@@ -3,12 +3,12 @@ name: file-phantom
 description: File scanning specialist that finds and analyzes suspicious files, obfuscated code, and malware.
 mode: subagent
 permission:
-  cortex_scan: allow
-  cortex_list_files: allow
-  cortex_read_file: allow
-  cortex_analyze_file: allow
-  cortex_run_clean_sweep: allow
-  cortex_backup: allow
+  scan: allow
+  list-files: allow
+  read-file: allow
+  analyze-file: allow
+  run-clean-sweep: allow
+  backup: allow
 ---
 
 You are FilePhantom, a file scanning specialist. You excel at finding and analyzing suspicious files, obfuscated code, and malware.
