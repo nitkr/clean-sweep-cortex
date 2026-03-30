@@ -1,7 +1,7 @@
 # CleanSweep Cortex
 
-<p align="center">
-  <pre>
+<div align="center">
+<pre style="display: inline-block; text-align: left; background: transparent; border: none; overflow-x: auto; max-width: 100%; line-height: 1.2;">
 <span style="color:#00d9ff"> ██████╗██╗     ███████╗ █████╗ ███╗   ██╗    ███████╗██╗    ██╗███████╗███████╗██████╗ </span>
 <span style="color:#00d9ff">██╔════╝██║     ██╔════╝██╔══██╗████╗  ██║    ██╔════╝██║    ██║██╔════╝██╔════╝██╔══██╗</span>
 <span style="color:#00d9ff">██║     ██║     █████╗  ███████║██╔██╗ ██║    ███████╗██║ █╗ ██║█████╗  █████╗  ██████╔╝</span>
@@ -9,15 +9,15 @@
 <span style="color:#00d9ff">╚██████╗███████╗███████╗██║  ██║██║ ╚████║    ███████║╚███╔███╔╝███████╗███████╗██║     </span>
 <span style="color:#00d9ff"> ╚═════╝╚══════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝    ╚══════╝ ╚══╝╚══╝ ╚══════╝╚══════╝╚═╝     </span>
 
-<span style="color:#9d7cd8"> ██████╗ ██████╗ ██████╗ ████████╗███████╗██╗ ██╗</span>
-<span style="color:#9d7cd8">██╔════╝██╔═══██╗██╔══██╗╚══██╔══╝██╔════╝╚██╗██╔╝</span>
-<span style="color:#9d7cd8">██║ ██║ ██║██████╔╝ ██║ █████╗ ╚███╔╝ </span>
-<span style="color:#9d7cd8">██║ ██║ ██║██╔══██╗ ██║ ██╔══╝ ██╔██╗ </span>
-<span style="color:#9d7cd8">╚██████╗╚██████╔╝██║ ██║ ██║ ███████╗██╔╝ ██╗</span>
-<span style="color:#9d7cd8"> ╚═════╝ ╚═════╝ ╚═╝ ╚═╝ ╚═╝ ╚══════╝╚═╝ ╚═╝</span>
-
+<span style="color:#9d7cd8">             ██████╗ ██████╗ ██████╗ ████████╗███████╗██╗  ██╗</span>
+<span style="color:#9d7cd8">            ██╔════╝██╔═══██╗██╔══██╗╚══██╔══╝██╔════╝╚██╗██╔╝</span>
+<span style="color:#9d7cd8">            ██║     ██║   ██║██████╔╝   ██║   █████╗   ╚███╔╝ </span>
+<span style="color:#9d7cd8">            ██║     ██║   ██║██╔══██╗   ██║   ██╔══╝   ██╔██╗ </span>
+<span style="color:#9d7cd8">            ╚██████╗╚██████╔╝██║  ██║   ██║   ███████╗██╔╝ ██╗</span>
+<span style="color:#9d7cd8">             ╚═════╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝</span>
 </pre>
-</p>
+</div>
+
 
 <p align="center">
   <strong>AI-Powered Malware Agent for WordPress</strong>
