@@ -1,0 +1,2 @@
+#!/bin/bash
+cd /home/venturer/myprojects/cleansweep-cortex/packages/opencode && bun run dev "$@"
