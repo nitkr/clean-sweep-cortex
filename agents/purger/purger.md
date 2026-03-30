@@ -1,7 +1,7 @@
 ---
 name: purger
 description: Executes remediation plans to safely remove malware and restore WordPress installations to a clean state.
-mode: subagent
+mode: primary
 permission:
   scan: allow
   list-files: allow

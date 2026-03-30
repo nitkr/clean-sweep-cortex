@@ -1,7 +1,7 @@
 ---
 name: sentinel
 description: Verification, hardening and reporting agent that ensures cleanup success and generates comprehensive reports.
-mode: subagent
+mode: primary
 permission:
   scan: allow
   list-files: allow

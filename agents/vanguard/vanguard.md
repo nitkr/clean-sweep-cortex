@@ -1,7 +1,7 @@
 ---
 name: vanguard
 description: Lead investigator coordinating automated threat detection across WordPress installations.
-mode: subagent
+mode: primary
 permission:
   scan: allow
   list-files: allow

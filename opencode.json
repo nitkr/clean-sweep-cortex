@@ -1,0 +1,11 @@
+{
+  "default_agent": "vanguard",
+  "agent": {
+    "build": {
+      "disable": true
+    },
+    "plan": {
+      "disable": true
+    }
+  }
+}

@@ -1,7 +1,7 @@
 ---
 name: tactician
 description: Strategic planner that creates safe remediation plans based on Vanguard's findings.
-mode: subagent
+mode: primary
 permission:
   scan: allow
   list-files: allow
