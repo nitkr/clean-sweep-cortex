@@ -10,7 +10,7 @@ cd packages/opencode
 bun run dev
 
 # Or use the built binary
-./bin/opencode
+./bin/cortex
 ```
 
 ## Global Commands
@@ -18,7 +18,7 @@ bun run dev
 ### Help
 
 ```bash
-opencode --help
+cortex --help
 ```
 
 Displays all available commands and options.
@@ -26,7 +26,7 @@ Displays all available commands and options.
 ### Version
 
 ```bash
-opencode --version
+cortex --version
 ```
 
 Shows the current CleanSweep Cortex version.
@@ -36,7 +36,7 @@ Shows the current CleanSweep Cortex version.
 ### Start New Session
 
 ```bash
-opencode session new --target <target>
+cortex session new --target <target>
 ```
 
 Creates a new sweep session for the specified target.
@@ -49,14 +49,14 @@ Creates a new sweep session for the specified target.
 **Example**:
 
 ```bash
-opencode session new --target /home/user/wordpress
-opencode session new --target https://example.com --name "production-scan"
+cortex session new --target /home/user/wordpress
+cortex session new --target https://example.com --name "production-scan"
 ```
 
 ### List Sessions
 
 ```bash
-opencode session list
+cortex session list
 ```
 
 Shows all sweep sessions with their status.
@@ -64,7 +64,7 @@ Shows all sweep sessions with their status.
 ### Resume Session
 
 ```bash
-opencode session resume <session-id>
+cortex session resume <session-id>
 ```
 
 Resumes a previous sweep session.
@@ -72,7 +72,7 @@ Resumes a previous sweep session.
 ### Delete Session
 
 ```bash
-opencode session delete <session-id>
+cortex session delete <session-id>
 ```
 
 Deletes a sweep session and its history.
@@ -82,7 +82,7 @@ Deletes a sweep session and its history.
 ### Full Scan
 
 ```bash
-opencode scan --target <target>
+cortex scan --target <target>
 ```
 
 Runs a complete malware scan.
@@ -96,14 +96,14 @@ Runs a complete malware scan.
 **Example**:
 
 ```bash
-opencode scan --target ./test-lab --mode full
-opencode scan --target /var/www/html --mode deep --dry-run
+cortex scan --target ./test-lab --mode full
+cortex scan --target /var/www/html --mode deep --dry-run
 ```
 
 ### Quick Scan
 
 ```bash
-opencode scan quick --target <target>
+cortex scan quick --target <target>
 ```
 
 Runs a targeted quick scan for common malware locations.
@@ -111,7 +111,7 @@ Runs a targeted quick scan for common malware locations.
 ### Verify Scan
 
 ```bash
-opencode scan verify --target <target>
+cortex scan verify --target <target>
 ```
 
 Post-cleanup verification scan.
@@ -121,7 +121,7 @@ Post-cleanup verification scan.
 ### Run Clean Sweep
 
 ```bash
-opencode clean --plan <plan-file>
+cortex clean --plan <plan-file>
 ```
 
 Executes a remediation plan using Clean Sweep CLI.
@@ -135,7 +135,7 @@ Executes a remediation plan using Clean Sweep CLI.
 ### Dry Run
 
 ```bash
-opencode clean --dry-run
+cortex clean --dry-run
 ```
 
 Preview all cleanup actions without executing them.
@@ -145,7 +145,7 @@ Preview all cleanup actions without executing them.
 ### Connect to Site
 
 ```bash
-opencode connect <connection-type>
+cortex connect <connection-type>
 ```
 
 Establishes connection to a WordPress site.
@@ -158,14 +158,14 @@ Establishes connection to a WordPress site.
 **Example**:
 
 ```bash
-opencode connect local ./test-lab
-opencode connect ssh user@pixeljunkyard.store
+cortex connect local ./test-lab
+cortex connect ssh user@pixeljunkyard.store
 ```
 
 ### Disconnect
 
 ```bash
-opencode disconnect
+cortex disconnect
 ```
 
 Closes the current site connection.
@@ -173,7 +173,7 @@ Closes the current site connection.
 ### Connection Status
 
 ```bash
-opencode status
+cortex status
 ```
 
 Shows current connection status and target info.
@@ -183,7 +183,7 @@ Shows current connection status and target info.
 ### List Agents
 
 ```bash
-opencode agents list
+cortex agents list
 ```
 
 Displays all available agents and their status.
@@ -191,7 +191,7 @@ Displays all available agents and their status.
 ### Invoke Agent
 
 ```bash
-opencode agent invoke <agent-name>
+cortex agent invoke <agent-name>
 ```
 
 Manually invokes a specific agent.
@@ -204,7 +204,7 @@ Manually invokes a specific agent.
 ### Agent Status
 
 ```bash
-opencode agent status <agent-name>
+cortex agent status <agent-name>
 ```
 
 Shows detailed status of a specific agent.
@@ -214,7 +214,7 @@ Shows detailed status of a specific agent.
 ### List Files
 
 ```bash
-opencode files list <path>
+cortex files list <path>
 ```
 
 Lists files in the specified directory.
@@ -228,7 +228,7 @@ Lists files in the specified directory.
 ### Read File
 
 ```bash
-opencode files read <path>
+cortex files read <path>
 ```
 
 Reads file contents with syntax highlighting.
@@ -236,7 +236,7 @@ Reads file contents with syntax highlighting.
 ### Analyze File
 
 ```bash
-opencode files analyze <path>
+cortex files analyze <path>
 ```
 
 Runs deep analysis on a suspicious file.
@@ -246,7 +246,7 @@ Runs deep analysis on a suspicious file.
 ### Create Backup
 
 ```bash
-opencode backup create --target <target>
+cortex backup create --target <target>
 ```
 
 Creates a backup before cleanup operations.
@@ -254,7 +254,7 @@ Creates a backup before cleanup operations.
 ### List Backups
 
 ```bash
-opencode backup list --target <target>
+cortex backup list --target <target>
 ```
 
 Shows available backups for the target.
@@ -262,7 +262,7 @@ Shows available backups for the target.
 ### Restore Backup
 
 ```bash
-opencode backup restore <backup-id>
+cortex backup restore <backup-id>
 ```
 
 Restores a previous backup.
@@ -272,7 +272,7 @@ Restores a previous backup.
 ### Generate Report
 
 ```bash
-opencode report generate <session-id>
+cortex report generate <session-id>
 ```
 
 Generates a sweep session report.
@@ -285,13 +285,13 @@ Generates a sweep session report.
 **Example**:
 
 ```bash
-opencode report generate abc123 --format html --output report.html
+cortex report generate abc123 --format html --output report.html
 ```
 
 ### Export Report
 
 ```bash
-opencode report export <session-id> --format <format>
+cortex report export <session-id> --format <format>
 ```
 
 Exports the complete session report.
@@ -301,7 +301,7 @@ Exports the complete session report.
 ### Show Config
 
 ```bash
-opencode config show
+cortex config show
 ```
 
 Displays current configuration.
@@ -309,7 +309,7 @@ Displays current configuration.
 ### Set Config
 
 ```bash
-opencode config set <key> <value>
+cortex config set <key> <value>
 ```
 
 Sets a configuration value.
@@ -317,8 +317,8 @@ Sets a configuration value.
 **Example**:
 
 ```bash
-opencode config set default-target ./test-lab
-opencode config set scan-mode deep
+cortex config set default-target ./test-lab
+cortex config set scan-mode deep
 ```
 
 ## Environment Variables
