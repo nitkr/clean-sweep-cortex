@@ -1,2 +1,3 @@
 #!/bin/bash
-cd /home/venturer/myprojects/cleansweep-cortex/packages/opencode && bun run dev "$@"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR/../packages/opencode" && bun run dev "$@"
