@@ -2,21 +2,21 @@
 
 <p align="center">
   <pre>
-<span style="color:#00d9ff">  ██████╗ ██████╗  ██████╗ ███╗   ███╗</span>
-<span style="color:#00d9ff"> ██╔════╝ ██╔══██╗██╔═══██╗████╗ ████║</span>
-<span style="color:#00d9ff"> ██║  ███╗██████╔╝██║   ██║██╔████╔██║</span>
-<span style="color:#00d9ff"> ██║   ██║██╔══██╗██║   ██║██║╚██╔╝██║</span>
-<span style="color:#00d9ff">╚██████╔╝██║  ██║╚██████╔╝██║ ╚═╝ ██║</span>
-<span style="color:#00d9ff">  ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝</span>
+<span style="color:#00d9ff"> ██████╗██╗     ███████╗ █████╗ ███╗   ██╗    ███████╗██╗    ██╗███████╗███████╗██████╗ </span>
+<span style="color:#00d9ff">██╔════╝██║     ██╔════╝██╔══██╗████╗  ██║    ██╔════╝██║    ██║██╔════╝██╔════╝██╔══██╗</span>
+<span style="color:#00d9ff">██║     ██║     █████╗  ███████║██╔██╗ ██║    ███████╗██║ █╗ ██║█████╗  █████╗  ██████╔╝</span>
+<span style="color:#00d9ff">██║     ██║     ██╔══╝  ██╔══██║██║╚██╗██║    ╚════██║██║███╗██║██╔══╝  ██╔══╝  ██╔═══╝ </span>
+<span style="color:#00d9ff">╚██████╗███████╗███████╗██║  ██║██║ ╚████║    ███████║╚███╔███╔╝███████╗███████╗██║     </span>
+<span style="color:#00d9ff"> ╚═════╝╚══════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝    ╚══════╝ ╚══╝╚══╝ ╚══════╝╚══════╝╚═╝     </span>
 
-<span style="color:#9d7cd8">███████╗██████╗ █████╗ ███╗ ██╗██████╗ ██████╗ ███╗ ██╗███████╗██████╗ </span>
-<span style="color:#9d7cd8">██╔════╝██╔══██╗██╔══██╗████╗ ██║██╔══██╗██╔═══██╗████╗ ██║██╔════╝██╔══██╗</span>
-<span style="color:#9d7cd8">███████╗██████╔╝███████║██╔██╗ ██║██████╔╝██║ ██║██╔██╗ ██║█████╗ ██████╔╝</span>
-<span style="color:#9d7cd8">╚════██║██╔═══╝ ██╔══██║██║╚██╗██║██╔══██╗██║ ██║██║╚██╗██║██╔══╝ ██╔══██╗</span>
-<span style="color:#9d7cd8">███████║██║ ██║ ██║██║ ╚████║██████╔╝╚██████╔╝██║ ╚████║███████╗██║ ██║</span>
-<span style="color:#9d7cd8">╚══════╝╚═╝ ╚═╝ ╚═╝╚═╝ ╚═══╝╚═════╝ ╚═════╝ ╚═╝ ╚═══╝╚══════╝╚═╝ ╚═╝</span>
+<span style="color:#9d7cd8"> ██████╗ ██████╗ ██████╗ ████████╗███████╗██╗ ██╗</span>
+<span style="color:#9d7cd8">██╔════╝██╔═══██╗██╔══██╗╚══██╔══╝██╔════╝╚██╗██╔╝</span>
+<span style="color:#9d7cd8">██║ ██║ ██║██████╔╝ ██║ █████╗ ╚███╔╝ </span>
+<span style="color:#9d7cd8">██║ ██║ ██║██╔══██╗ ██║ ██╔══╝ ██╔██╗ </span>
+<span style="color:#9d7cd8">╚██████╗╚██████╔╝██║ ██║ ██║ ███████╗██╔╝ ██╗</span>
+<span style="color:#9d7cd8"> ╚═════╝ ╚═════╝ ╚═╝ ╚═╝ ╚═╝ ╚══════╝╚═╝ ╚═╝</span>
 
-  </pre>
+</pre>
 </p>
 
 <p align="center">
@@ -75,7 +75,6 @@ cleansweep-cortex/
 │   ├── tactician/      # Analysis & Planning
 │   ├── purger/         # Execution & Remediation
 │   └── sentinel/       # Verification & Hardening
-├── test-lab/           # Local WordPress test installation
 └── docs/               # Documentation
 ```
 
@@ -90,5 +89,5 @@ cleansweep-cortex/
 
 - **Repository**: https://github.com/nitkr/clean-sweep-cortex
 - **Clean Sweep CLI**: https://github.com/nitkr/clean-sweep-cli
-- **Test Lab**: `test-lab/` (local WordPress installation)
+
 - **Remote Site**: https://pixeljunkyard.store/my-proj-two/
