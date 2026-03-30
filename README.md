@@ -89,5 +89,3 @@ cleansweep-cortex/
 
 - **Repository**: https://github.com/nitkr/clean-sweep-cortex
 - **Clean Sweep CLI**: https://github.com/nitkr/clean-sweep-cli
-
-- **Remote Site**: https://pixeljunkyard.store/my-proj-two/

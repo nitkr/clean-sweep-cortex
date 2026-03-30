@@ -38,10 +38,10 @@ Create a `.env` file in the project root with your configuration:
 
 ```env
 # Local test lab path (default for development)
-TEST_LAB_PATH=/home/venturer/myprojects/cleansweep-cortex/test-lab
+TEST_LAB_PATH=/path/to/your/test-lab
 
 # Remote site (optional - for production scanning)
-REMOTE_SITE_URL=https://pixeljunkyard.store/my-proj-two/
+REMOTE_SITE_URL=https://example.com/your-wordpress-site/
 
 # SSH configuration for remote sites (if needed)
 SSH_HOST=your-server.com
