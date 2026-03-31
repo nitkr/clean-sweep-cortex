@@ -3,6 +3,20 @@ import { createEffect, createMemo } from "solid-js"
 import { createSimpleContext } from "@opencode-ai/ui/context"
 import { persisted } from "@/utils/persist"
 
+export interface SiteSettings {
+  connectionType: "local" | "ssh"
+  localPath: string
+  ssh: {
+    host: string
+    port: number
+    username: string
+    authType: "password" | "privateKey"
+    password?: string
+    privateKeyPath?: string
+    remotePath: string
+  }
+}
+
 export interface NotificationSettings {
   agent: boolean
   permissions: boolean
@@ -41,6 +55,7 @@ export interface Settings {
   }
   notifications: NotificationSettings
   sounds: SoundSettings
+  site: SiteSettings
 }
 
 export const monoDefault = "System Mono"
@@ -117,6 +132,18 @@ const defaultSettings: Settings = {
     permissions: "staplebops-02",
     errorsEnabled: true,
     errors: "nope-03",
+  },
+  site: {
+    connectionType: "local",
+    localPath: "",
+    ssh: {
+      host: "",
+      port: 22,
+      username: "",
+      authType: "privateKey",
+      privateKeyPath: "",
+      remotePath: "",
+    },
   },
 }
 
@@ -260,6 +287,46 @@ export const { use: useSettings, provider: SettingsProvider } = createSimpleCont
         errors: withFallback(() => store.sounds?.errors, defaultSettings.sounds.errors),
         setErrors(value: string) {
           setStore("sounds", "errors", value)
+        },
+      },
+      site: {
+        connectionType: withFallback(() => store.site?.connectionType, defaultSettings.site.connectionType),
+        setConnectionType(value: "local" | "ssh") {
+          setStore("site", "connectionType", value)
+        },
+        localPath: withFallback(() => store.site?.localPath, defaultSettings.site.localPath),
+        setLocalPath(value: string) {
+          setStore("site", "localPath", value)
+        },
+        ssh: {
+          host: withFallback(() => store.site?.ssh?.host, defaultSettings.site.ssh.host),
+          setHost(value: string) {
+            setStore("site", "ssh", "host", value)
+          },
+          port: withFallback(() => store.site?.ssh?.port, defaultSettings.site.ssh.port),
+          setPort(value: number) {
+            setStore("site", "ssh", "port", value)
+          },
+          username: withFallback(() => store.site?.ssh?.username, defaultSettings.site.ssh.username),
+          setUsername(value: string) {
+            setStore("site", "ssh", "username", value)
+          },
+          authType: withFallback(() => store.site?.ssh?.authType, defaultSettings.site.ssh.authType),
+          setAuthType(value: "password" | "privateKey") {
+            setStore("site", "ssh", "authType", value)
+          },
+          password: withFallback(() => store.site?.ssh?.password, defaultSettings.site.ssh.password),
+          setPassword(value: string) {
+            setStore("site", "ssh", "password", value)
+          },
+          privateKeyPath: withFallback(() => store.site?.ssh?.privateKeyPath, defaultSettings.site.ssh.privateKeyPath),
+          setPrivateKeyPath(value: string) {
+            setStore("site", "ssh", "privateKeyPath", value)
+          },
+          remotePath: withFallback(() => store.site?.ssh?.remotePath, defaultSettings.site.ssh.remotePath),
+          setRemotePath(value: string) {
+            setStore("site", "ssh", "remotePath", value)
+          },
         },
       },
     }
