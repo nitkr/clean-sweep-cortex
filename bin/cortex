@@ -3,6 +3,6 @@ if [ "$1" = "--version" ]; then
   echo "CleanSweep Cortex version 1.3.5"
 else
   SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-  export OPENCODE_CONFIG_DIR="$SCRIPT_DIR"
+  export OPENCODE_CONFIG_DIR="$SCRIPT_DIR/.."
   cd "$SCRIPT_DIR/../packages/opencode" && bun run dev "$@"
 fi
