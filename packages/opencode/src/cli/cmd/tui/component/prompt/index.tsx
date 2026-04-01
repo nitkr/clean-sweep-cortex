@@ -945,6 +945,18 @@ export function Prompt(props: PromptProps) {
                     return
                   }
                 }
+                if (!autocomplete.visible) {
+                  if (e.name === "tab" && e.ctrl && !e.shift) {
+                    local.agent.move(1)
+                    e.preventDefault()
+                    return
+                  }
+                  if (e.name === "tab" && e.ctrl && e.shift) {
+                    local.agent.move(-1)
+                    e.preventDefault()
+                    return
+                  }
+                }
                 if (store.mode === "normal") autocomplete.onKeyDown(e)
                 if (!autocomplete.visible) {
                   if (
