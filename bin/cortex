@@ -4,5 +4,5 @@ if [ "$1" = "--version" ]; then
 else
   SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
   export OPENCODE_CONFIG_DIR="$SCRIPT_DIR"
-  cd "$SCRIPT_DIR/packages/opencode" && bun run dev "$@"
+  cd "$SCRIPT_DIR/../packages/opencode" && bun run dev "$@"
 fi
