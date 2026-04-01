@@ -74,6 +74,7 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
             if (next < 0) next = agents().length - 1
             if (next >= agents().length) next = 0
             const value = agents()[next]
+            if (!value) return
             setAgentStore("current", value.name)
           })
         },
@@ -241,7 +242,9 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
           if (next >= recent.length) next = 0
           const val = recent[next]
           if (!val) return
-          setModelStore("model", agent.current().name, { ...val })
+          const curr = agent.current()
+          if (!curr) return
+          setModelStore("model", curr.name, { ...val })
         },
         cycleFavorite(direction: 1 | -1) {
           const favorites = modelStore.favorite.filter((item) => isModelValid(item))
@@ -267,7 +270,9 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
           }
           const next = favorites[index]
           if (!next) return
-          setModelStore("model", agent.current().name, { ...next })
+          const curr = agent.current()
+          if (!curr) return
+          setModelStore("model", curr.name, { ...next })
           const uniq = uniqueBy([next, ...modelStore.recent], (x) => `${x.providerID}/${x.modelID}`)
           if (uniq.length > 10) uniq.pop()
           setModelStore(
@@ -286,7 +291,9 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
               })
               return
             }
-            setModelStore("model", agent.current().name, model)
+            const curr = agent.current()
+            if (!curr) return
+            setModelStore("model", curr.name, model)
             if (options?.recent) {
               const uniq = uniqueBy([model, ...modelStore.recent], (x) => `${x.providerID}/${x.modelID}`)
               if (uniq.length > 10) uniq.pop()
