@@ -91,6 +91,20 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
           }
           return colors()[index % colors().length]
         },
+        setCurrent(name: string) {
+          setAgentStore("current", name)
+        },
+      }
+    })
+
+    // Fix: Update agentStore.current when agents list becomes available
+    createEffect(() => {
+      const list = agent.list()
+      if (list.length > 0) {
+        const validAgent = list.some((x) => x.name === agent.current()?.name)
+        if (!validAgent) {
+          agent.setCurrent(list[0].name)
+        }
       }
     })
 
@@ -213,6 +227,9 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
         },
         favorite() {
           return modelStore.favorite
+        },
+        hasModelFor(name: string) {
+          return !!modelStore.model[name]
         },
         parsed: createMemo(() => {
           const value = currentModel()
@@ -386,10 +403,13 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
       },
     }
 
-    // Automatically update model when agent changes
+    // Automatically update model when agent changes (only if user hasn't selected)
     createEffect(() => {
       const value = agent.current()
       if (!value) return
+      // Only auto-set if user hasn't explicitly selected a model for this agent
+      const existing = model.hasModelFor(value.name)
+      if (existing) return
       if (value.model) {
         if (isModelValid(value.model))
           model.set({
