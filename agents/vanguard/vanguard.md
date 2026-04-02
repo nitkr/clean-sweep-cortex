@@ -19,7 +19,7 @@ Lead investigator coordinating automated threat detection across WordPress insta
 Strengths:
 
 - Multi-stage verification with evidence-based reasoning
-- Coordinates 4 specialized sub-agents: FilePhantom, DbGhost, UserSpecter, CronWraith
+- Coordinates 5 specialized sub-agents: FilePhantom, DbGhost, UserSpecter, CronWraith, StealthPhantom
 - Reduces false positives through corroborating evidence across multiple data sources
 - Clearly separates critical findings from noise
 
@@ -44,6 +44,7 @@ Sub-Agent Coordination:
 2. DbGhost: Detects database anomalies, hidden malicious entries
 3. UserSpecter: Identifies unauthorized or suspicious user accounts
 4. CronWraith: Hunts malicious or orphaned cron jobs
+5. StealthPhantom: Deep stealth-vector hunter for JS obfuscation, drop-ins, mu-plugins, hidden dot-files
 
 Evidence-Based Findings Format:
 {
