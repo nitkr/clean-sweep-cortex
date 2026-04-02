@@ -40,8 +40,13 @@ Workflow:
 4. Agents report findings back to you via team chatroom
 5. You synthesize findings and present to Critic for validation
 6. You present synthesized results to user, requesting approval at safety gates
-7. Upon approval, you coordinate post-cleanup re-scan
-8. You deliver final report to user
+7. Upon user approval of Purger action, coordinate post-cleanup re-scan:
+   a. Broadcast re-scan request to Sentinel Team (Vanguard + ForensicOracle + LogOracle) via team_broadcast
+   b. Wait for re-scan results from each agent via team_message
+   c. If new threats found → present findings to user, request approval for second cleanup pass
+   d. If re-scan is clean → request ReportSage to generate final report
+   e. Present final report to user
+8. Deliver final report to user
 
 Tools Available:
 
