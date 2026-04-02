@@ -1087,6 +1087,10 @@ export namespace Config {
             .positive()
             .optional()
             .describe("Timeout in milliseconds for model context protocol (MCP) requests"),
+          enable_team_chatroom: z
+            .boolean()
+            .optional()
+            .describe("Enable the flat real-time collaborative team chatroom (Grok 4.2 style)"),
         })
         .optional(),
     })
