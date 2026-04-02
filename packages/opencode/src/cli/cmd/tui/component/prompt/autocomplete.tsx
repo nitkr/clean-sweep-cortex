@@ -334,7 +334,7 @@ export function Autocomplete(props: {
   const agents = createMemo(() => {
     const agents = sync.data.agent
     return agents
-      .filter((agent) => !agent.hidden && agent.mode !== "primary")
+      .filter((agent) => !agent.hidden && agent.mode !== "subagent")
       .map(
         (agent): AutocompleteOption => ({
           display: "@" + agent.name,
