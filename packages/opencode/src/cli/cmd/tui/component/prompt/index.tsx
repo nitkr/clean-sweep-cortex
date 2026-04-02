@@ -946,12 +946,12 @@ export function Prompt(props: PromptProps) {
                   }
                 }
                 if (!autocomplete.visible) {
-                  if (e.name === "tab" && e.ctrl && !e.shift) {
+                  if (e.name === "tab" && !e.shift) {
                     local.agent.move(1)
                     e.preventDefault()
                     return
                   }
-                  if (e.name === "tab" && e.ctrl && e.shift) {
+                  if (e.name === "tab" && e.shift) {
                     local.agent.move(-1)
                     e.preventDefault()
                     return
