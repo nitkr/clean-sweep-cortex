@@ -93,6 +93,7 @@ export namespace ShareNext {
       }
     })
     Bus.subscribe(MessageV2.Event.PartUpdated, async (evt) => {
+      if (evt.properties.part.type === "team-message") return
       await sync(evt.properties.part.sessionID, [
         {
           type: "part",
@@ -273,7 +274,9 @@ export namespace ShareNext {
         type: "message" as const,
         data: x.info,
       })),
-      ...messages.flatMap((x) => x.parts.map((y) => ({ type: "part" as const, data: y }))),
+      ...messages.flatMap((x) =>
+        x.parts.filter((y) => y.type !== "team-message").map((y) => ({ type: "part" as const, data: y })),
+      ),
       {
         type: "session_diff",
         data: diffs,
