@@ -1448,6 +1448,60 @@ PART_MAPPING["reasoning"] = function ReasoningPartDisplay(props) {
   )
 }
 
+interface TeamMessagePartLocal {
+  type: "team-message"
+  agent: string
+  content: string
+  confidence?: number
+  timestamp?: number
+  broadcast?: boolean
+  recipient?: string
+}
+
+PART_MAPPING["team-message"] = function TeamMessagePartDisplay(props) {
+  const part = () => props.part as TeamMessagePartLocal
+
+  const emoji = () => {
+    const confidence = part().confidence
+    if (confidence === undefined) return "💬"
+    if (confidence >= 95) return "✅"
+    if (confidence >= 85) return "⚡"
+    if (confidence >= 70) return "⚠️"
+    return "❌"
+  }
+
+  const time = () => {
+    const ts = part().timestamp
+    if (!ts) return ""
+    return new Date(ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+  }
+
+  const scope = () => (part().broadcast === false ? ` → ${part().recipient}` : " (broadcast)")
+
+  return (
+    <div data-component="team-message-part">
+      <div data-slot="team-message-header" class="text-12-regular text-text-weak">
+        <span data-slot="team-message-emoji">{emoji()}</span>
+        <span data-slot="team-message-agent">{part().agent}</span>
+        <span data-slot="team-message-scope">{scope()}</span>
+        <Show when={part().confidence !== undefined}>
+          <span data-slot="team-message-confidence" class="text-12-regular text-text-weak">
+            {part().confidence}% confidence
+          </span>
+        </Show>
+        <Show when={time()}>
+          <span data-slot="team-message-time" class="text-12-regular text-text-weak">
+            {time()}
+          </span>
+        </Show>
+      </div>
+      <div data-slot="team-message-content">
+        <Markdown text={part().content} cacheKey={`team-${part().agent}-${part().timestamp}`} />
+      </div>
+    </div>
+  )
+}
+
 ToolRegistry.register({
   name: "read",
   render(props) {
