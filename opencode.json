@@ -1,6 +1,9 @@
 {
   "$schema": "https://app.kilo.ai/config.json",
   "default_agent": "vanguard",
+  "experimental": {
+    "enable_team_chatroom": true
+  },
   "agent": {
     "build": {
       "disable": true
