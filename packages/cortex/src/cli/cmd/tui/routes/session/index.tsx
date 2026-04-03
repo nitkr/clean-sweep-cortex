@@ -29,15 +29,7 @@ import {
   RGBA,
 } from "@opentui/core"
 import { Prompt, type PromptRef } from "@tui/component/prompt"
-import type {
-  AssistantMessage,
-  Part,
-  ToolPart,
-  UserMessage,
-  TextPart,
-  ReasoningPart,
-  TeamMessagePart,
-} from "@opencode-ai/sdk/v2"
+import type { AssistantMessage, Part, ToolPart, UserMessage, TextPart, ReasoningPart } from "@opencode-ai/sdk/v2"
 import { useLocal } from "@tui/context/local"
 import { Locale } from "@/util/locale"
 import type { Tool } from "@/tool/tool"
@@ -88,6 +80,7 @@ import { DialogExportOptions } from "../../ui/dialog-export-options"
 import { formatTranscript } from "../../util/transcript"
 import { UI } from "@/cli/ui.ts"
 import { useTuiConfig } from "../../context/tui-config"
+import { MessageV2 } from "@/session/message-v2"
 
 addDefaultParsers(parsers.parsers)
 
@@ -1450,7 +1443,7 @@ function ReasoningPart(props: { last: boolean; part: ReasoningPart; message: Ass
   )
 }
 
-function TeamMessagePart(props: { last: boolean; part: TeamMessagePart; message: AssistantMessage }) {
+function TeamMessagePart(props: { last: boolean; part: MessageV2.TeamMessagePart; message: AssistantMessage }) {
   const { theme } = useTheme()
   const emoji = createMemo(() => {
     const confidence = props.part.confidence
