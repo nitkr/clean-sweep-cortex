@@ -1,10 +1,32 @@
 # CleanSweep Cortex Agents
 
-CleanSweep Cortex uses a hierarchical multi-agent system with exactly **4 main agents**, each containing **4 specialized sub-agents**. This structure ensures thorough coverage of all malware detection and remediation scenarios.
+CleanSweep Cortex uses a **collaborative multi-agent system** with **4 main agents** and **19 specialized sub-agents**. The system employs a flat collaborative model (Grok 4.2 style) where Cortex acts as lead orchestrator and Cortex Critic serves as always-on reviewer.
 
-## Agent Hierarchy Overview
+## Agent Collaboration Model
 
 ```
+                         ┌─────────────┐
+                         │   Cortex    │  ← Lead Orchestrator
+                         │   Critic    │  ← Always-on Reviewer
+                         └──────┬──────┘
+                                │
+         ┌──────────────────────┼──────────────────────┐
+         │                      │                      │
+    ┌────▼────┐            ┌────▼────┐            ┌────▼────┐
+    │ Vanguard│◄──────────►│Tactician│◄──────────►│  Purger │
+    └────┬────┘            └────┬────┘            └────┬────┘
+         │            ┌─────────┼─────────┐            │
+         │            │         │         │            │
+         └────────────┴─────────┼─────────┴────────────┘
+                                │
+                         ┌──────▼──────┐
+                         │  Sentinel  │
+                         └─────────────┘
+
+Team broadcast and team_message primitives enable flat collaboration.
+Team messages display in TUI Thinking section.
+```
+
                     ┌─────────────┐
                     │   Cortex    │
                     │   Critic    │
@@ -12,15 +34,17 @@ CleanSweep Cortex uses a hierarchical multi-agent system with exactly **4 main a
                            │
         ┌──────────────────┼──────────────────┐
         │                  │                  │
-   ┌────▼────┐        ┌────▼────┐        ┌────▼────┐
-   │ Vanguard│───────→│Tactician│───────→│  Purger │
-   └────┬────┘        └────┬────┘        └────┬────┘
-        │                  │                  │
-        └──────────────────┼──────────────────┘
-                           │
-                    ┌──────▼──────┐
-                    │  Sentinel  │
-                    └────────────┘
+
+┌────▼────┐ ┌────▼────┐ ┌────▼────┐
+│ Vanguard│───────→│Tactician│───────→│ Purger │
+└────┬────┘ └────┬────┘ └────┬────┘
+│ │ │
+└──────────────────┼──────────────────┘
+│
+┌──────▼──────┐
+│ Sentinel │
+└────────────┘
+
 ```
 
 ## 1. Vanguard (Investigation & Discovery)
@@ -79,6 +103,21 @@ Hunts for malicious or orphaned cron jobs.
 
 **Tools Used**: Cron job list via RemediationBackend
 
+### StealthPhantom
+
+Deep stealth-vector hunter specializing in hard-to-detect malware and advanced evasion techniques.
+
+**Capabilities**:
+
+- Detection of heavily obfuscated JavaScript (multi-layer encoding, polynomial obfuscation)
+- Identification of drop-in plugins and mu-plugins
+- Analysis of .user.ini and .htaccess for malicious redirects
+- Finding hidden files and directories (dot-files, double-extension tricks)
+- Detection of timing-based triggers and conditional infections
+- SEO spam and hidden link injection detection
+
+**Tools Used**: `@cortex scan`, `@cortex list-files`, `@cortex read-file`, `@cortex analyze-file`
+
 ---
 
 ## 2. Tactician (Analysis & Strategic Planning)
@@ -136,6 +175,22 @@ Ensures backups are taken before any destructive steps.
 - Point-in-time recovery preparation
 
 **Output**: Confirmed backup status before cleanup proceeds
+
+### ForensicOracle
+
+Malware intelligence and impact analyst that assesses damage scope and detects re-infection patterns.
+
+**Capabilities**:
+
+- SEO damage assessment (cloaked redirects, link farms, spam injections)
+- User data exposure analysis (compromised accounts, stolen data patterns)
+- Server damage assessment (backdoors, pivot points, lateral movement)
+- Remaining indicators checklist
+- Targeted database correlation
+- Re-infection pattern detection against baselines
+- Impact scoring beyond raw threat counts
+
+**Output**: Comprehensive impact reports with confidence scores
 
 ---
 
@@ -253,20 +308,49 @@ Generates clear, beautiful summary reports.
 
 **Output**: Complete sweep session report
 
+### LogOracle
+
+Infection vector tracer that analyzes server and WordPress logs to determine how malware got into the system. Runs twice during a sweep: main run before cleanup + quick second pass after re-scan.
+
+**Capabilities**:
+
+- Analysis of Apache/Nginx access logs for attack patterns
+- WordPress debug logs and error logs analysis
+- Failed login attempts and brute force detection
+- Plugin/theme vulnerability exploitation detection
+- SQL injection and XSS attack pattern recognition
+- Infection timeline reconstruction
+- Initial entry point and lateral movement identification
+- Correlating file system changes with log events
+
+**Output**: Attack chain reconstruction with confidence scores
+
 ---
 
 ## Agent Communication
 
-Agents communicate through a structured message passing system:
+Agents communicate through team broadcast and team_message primitives in a flat collaborative model:
 
 ```
+
+User → Cortex (orchestrator) ↔ Team Agents (parallel collaboration)
+↕
+Team broadcast / team_message primitives
+↕
+Cortex Critic (always-on review)
+
+Post-cleanup: Re-scan triggers team collaboration for verification.
+
+```
+
 User → Cortex → Vanguard (discovery) → Tactician (planning)
-                                           ↓
-                        Purger (execution) ← User (confirmation)
-                                           ↓
-                              Sentinel (verification)
-                                           ↓
-                                    Cortex → User
+↓
+Purger (execution) ← User (confirmation)
+↓
+Sentinel (verification)
+↓
+Cortex → User
+
 ```
 
 ## Confidence Thresholds
@@ -279,9 +363,14 @@ User → Cortex → Vanguard (discovery) → Tactician (planning)
 
 ## Cortex Critic
 
-An additional self-review agent that runs after every scan/plan step:
+An always-on reviewer agent that runs after every scan/plan step:
 
 - Reviews agent decisions for consistency
 - Checks for missed threats
 - Validates confidence scoring
 - Suggests additional verification steps
+- Operates in flat collaborative model alongside team agents
+
+```
+
+```

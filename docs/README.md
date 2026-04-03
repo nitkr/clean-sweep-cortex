@@ -26,14 +26,14 @@ Welcome to the CleanSweep Cortex documentation. This section provides detailed g
 
 ## Overview
 
-CleanSweep Cortex is built on a hierarchical multi-agent system designed specifically for WordPress malware remediation:
+CleanSweep Cortex is built on a collaborative multi-agent system designed specifically for WordPress malware remediation:
 
 1. **Vanguard** - Investigation & Discovery
 2. **Tactician** - Analysis & Strategic Planning
 3. **Purger** - Safe Execution & Remediation
 4. **Sentinel** - Verification, Hardening & Reporting
 
-Each main agent contains 4 specialized sub-agents, creating a 4x4 hierarchical structure that ensures thorough coverage of all malware detection and removal scenarios.
+The system uses a flat collaborative model (Grok 4.2 style) with Cortex as lead orchestrator and Cortex Critic as always-on reviewer. The team consists of 19 specialized sub-agents including 3 new collaborative agents: StealthPhantom (stealth-vector hunter), ForensicOracle (impact analyst), and LogOracle (infection vector tracer).
 
 ## Key Concepts
 
@@ -47,7 +47,11 @@ The system uses an abstract interface that allows different remediation tools to
 
 ### False Positive Reduction
 
-The system guarantees accurate ruling-out of false positives through multi-stage verification, evidence-based reasoning, and risk scoring. Only items with >85% confidence proceed to Purger, and items <95% require human confirmation.
+The system guarantees accurate ruling-out of false positives through multi-stage verification, evidence-based reasoning, and risk scoring. Only items with >85% confidence proceed to Purger, and items <95% require human confirmation. Cortex Critic provides always-on review throughout the process.
+
+### Collaborative Agent Team
+
+The system employs team broadcast and team_message primitives for flat collaboration. Post-cleanup re-scan triggers team-wide verification. Team messages display in the TUI Thinking section.
 
 ## Getting Help
 

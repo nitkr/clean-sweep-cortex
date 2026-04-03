@@ -11,20 +11,25 @@ CleanSweep Cortex is built on a modular, scalable architecture that separates co
 │  │ Chat Interface│  │ Sweep Sessions│  │ Dynamic File Browser │ │
 │  └─────────────┘  └──────────────┘  └────────────────────────┘ │
 ├─────────────────────────────────────────────────────────────────┤
-│                     Agent System                                 │
-│  ┌─────────┐  ┌───────────┐  ┌─────────┐  ┌─────────────────┐ │
-│  │ Vanguard│→ │ Tactician │→ │ Purger  │→ │    Sentinel     │ │
-│  │(4 agents)│  │ (4 agents)│  │(4 agents)│  │   (4 agents)    │ │
-│  └─────────┘  └───────────┘  └─────────┘  └─────────────────┘ │
+│                     Agent System (Flat Collaborative)             │
+│  ┌─────────────────────────────────────────────────────────────┐│
+│  │  Cortex (Lead Orchestrator)    ←→    Cortex Critic (Review) ││
+│  │       ↓                                                        ││
+│  │  ┌─────────┐  ┌───────────┐  ┌─────────┐  ┌─────────────────┐││
+│  │  │ Vanguard│◄─►│Tactician  │◄─►│ Purger  │◄─►│    Sentinel    │││
+│  │  │(5 agents)│  │ (5 agents)│  │(4 agents)│  │   (5 agents)   │││
+│  │  └─────────┘  └───────────┘  └─────────┘  └─────────────────┘││
+│  │         Team broadcast / team_message primitives               ││
+│  └─────────────────────────────────────────────────────────────┘│
 ├─────────────────────────────────────────────────────────────────┤
 │                  @cortex Tool Calling System                     │
 │  scan │ backup │ list-files │ read-file │ analyze-file │ etc. │
 ├─────────────────────────────────────────────────────────────────┤
 │               RemediationBackend Adapter Layer                   │
 │  ┌─────────────────┐  ┌───────────────────────────────────────┐│
-│  │ Abstract Interface│  │ Concrete Adapters                    ││
-│  │ (scan, plan,     │  │ - SSHAdapter + CleanSweepCLIAdapter  ││
-│  │  clean, verify)   │  │ - Future: API, PHP Bridge, etc.      ││
+│  │ Abstract Interface│  │ Concrete Adapters                   ││
+│  │ (scan, plan,     │  │ - SSHAdapter + CleanSweepCLIAdapter ││
+│  │  clean, verify)   │  │ - Future: API, PHP Bridge, etc.    ││
 │  └─────────────────┘  └───────────────────────────────────────┘│
 ├─────────────────────────────────────────────────────────────────┤
 │                    Target Systems                                │
@@ -46,14 +51,26 @@ Built on OpenCode's Solid.js interface with Cortex-specific customizations:
 
 ### 2. Agent System
 
-The hierarchical multi-agent system consists of exactly **4 main agents**, each with **4 sub-agents**:
+The collaborative multi-agent system consists of **4 main agents** with **19 specialized sub-agents** total. The system uses a flat collaborative model (Grok 4.2 style) where Cortex acts as lead orchestrator and Cortex Critic serves as always-on reviewer.
 
-| Main Agent    | Purpose                   | Sub-Agents                                                      |
-| ------------- | ------------------------- | --------------------------------------------------------------- |
-| **Vanguard**  | Investigation & Discovery | FilePhantom, DbGhost, UserSpecter, CronWraith                   |
-| **Tactician** | Analysis & Planning       | RiskOracle, ActionArchitect, ResourceWarden, BackupPhantom      |
-| **Purger**    | Execution & Remediation   | CoreEraser, PluginScrubber, DbPurifier, FileIncinerator         |
-| **Sentinel**  | Verification & Hardening  | IntegrityVerifier, LockdownEnforcer, MonitorWatcher, ReportSage |
+| Main Agent    | Purpose                   | Sub-Agents                                                                     |
+| ------------- | ------------------------- | ------------------------------------------------------------------------------ |
+| **Vanguard**  | Investigation & Discovery | FilePhantom, DbGhost, UserSpecter, CronWraith, **StealthPhantom**              |
+| **Tactician** | Analysis & Planning       | RiskOracle, ActionArchitect, ResourceWarden, BackupPhantom, **ForensicOracle** |
+| **Purger**    | Execution & Remediation   | CoreEraser, PluginScrubber, DbPurifier, FileIncinerator                        |
+| **Sentinel**  | Verification & Hardening  | IntegrityVerifier, LockdownEnforcer, MonitorWatcher, ReportSage, **LogOracle** |
+
+**New Agents Added in Collaborative Team:**
+
+- **StealthPhantom** (Vanguard): Deep stealth-vector hunter for obfuscated JS, drop-ins, mu-plugins, hidden dot-files, and advanced evasion techniques
+- **ForensicOracle** (Tactician): Malware intelligence analyst for SEO/user-data/server damage assessment and re-infection pattern detection
+- **LogOracle** (Sentinel): Infection vector tracer that analyzes logs to determine attack chain and entry point (runs twice: before and after cleanup)
+
+**Collaboration Model:**
+
+- Team broadcast and team_message primitives enable flat collaboration
+- Post-cleanup re-scan workflow triggers team collaboration for verification
+- Team messages display in TUI Thinking section
 
 ### 3. RemediationBackend Adapter Layer
 
@@ -90,31 +107,31 @@ Agents invoke specialized tools directly:
 ```
 1. User initiates sweep session
        ↓
-2. Vanguard agents discover threats
-   - FilePhantom scans files
-   - DbGhost checks database
-   - UserSpecter validates users
-   - CronWraith hunts cron jobs
+2. Cortex orchestrates parallel team collaboration
+   - Vanguard agents discover threats (FilePhantom, DbGhost, UserSpecter, CronWraith, StealthPhantom)
+   - Tactician analyzes and plans (RiskOracle, ActionArchitect, ResourceWarden, BackupPhantom, ForensicOracle)
+   - Team broadcast shares findings via team_message primitives
        ↓
-3. Tactician creates remediation plan
-   - RiskOracle scores each threat
-   - ActionArchitect sequences actions
-   - ResourceWarden checks impact
-   - BackupPhantom ensures backup
+3. User confirms plan (especially <95% confidence items)
        ↓
-4. User confirms plan (especially <95% confidence items)
-       ↓
-5. Purger executes cleanup
+4. Purger executes cleanup
    - CoreEraser repairs WordPress core
    - PluginScrubber handles plugins
    - DbPurifier cleans database
    - FileIncinerator removes malicious files
        ↓
-6. Sentinel verifies and hardens
+5. Sentinel verifies and hardens
    - IntegrityVerifier confirms cleanup
    - LockdownEnforcer applies security
    - MonitorWatcher sets up monitoring
    - ReportSage generates report
+   - LogOracle traces infection vector (pre-cleanup main run)
+       ↓
+6. Post-cleanup re-scan triggers team collaboration
+   - Quick second pass by LogOracle
+   - Team verifies all threats cleared
+       ↓
+7. Cortex Critic provides always-on review throughout
 ```
 
 ## False Positive Reduction
@@ -125,7 +142,7 @@ The system implements multiple layers to minimize false positives:
 2. **Evidence-based reasoning**: Agents must cite concrete code snippets and context
 3. **Risk scoring**: Tactician assigns 0-100% confidence; only >85% items proceed automatically
 4. **Human confirmation gate**: Items <95% confidence require explicit user approval
-5. **Cortex Critic review**: Self-review agent runs after every scan/plan step
+5. **Cortex Critic review**: Always-on reviewer runs after every scan/plan step in the collaborative team
 
 ## Theme & Branding
 

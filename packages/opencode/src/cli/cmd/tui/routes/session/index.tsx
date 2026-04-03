@@ -29,7 +29,15 @@ import {
   RGBA,
 } from "@opentui/core"
 import { Prompt, type PromptRef } from "@tui/component/prompt"
-import type { AssistantMessage, Part, ToolPart, UserMessage, TextPart, ReasoningPart } from "@opencode-ai/sdk/v2"
+import type {
+  AssistantMessage,
+  Part,
+  ToolPart,
+  UserMessage,
+  TextPart,
+  ReasoningPart,
+  TeamMessagePart,
+} from "@opencode-ai/sdk/v2"
 import { useLocal } from "@tui/context/local"
 import { Locale } from "@/util/locale"
 import type { Tool } from "@/tool/tool"
@@ -1406,6 +1414,7 @@ const PART_MAPPING = {
   text: TextPart,
   tool: ToolPart,
   reasoning: ReasoningPart,
+  "team-message": TeamMessagePart,
 }
 
 function ReasoningPart(props: { last: boolean; part: ReasoningPart; message: AssistantMessage }) {
@@ -1438,6 +1447,57 @@ function ReasoningPart(props: { last: boolean; part: ReasoningPart; message: Ass
         />
       </box>
     </Show>
+  )
+}
+
+function TeamMessagePart(props: { last: boolean; part: TeamMessagePart; message: AssistantMessage }) {
+  const { theme } = useTheme()
+  const emoji = createMemo(() => {
+    const confidence = props.part.confidence
+    if (confidence === undefined) return "💬"
+    if (confidence >= 95) return "✅"
+    if (confidence >= 85) return "⚡"
+    if (confidence >= 70) return "⚠️"
+    return "❌"
+  })
+  const scope = createMemo(() => (props.part.broadcast === false ? ` → ${props.part.recipient}` : " (broadcast)"))
+  const time = createMemo(() => {
+    const ts = props.part.timestamp
+    if (!ts) return ""
+    return new Date(ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+  })
+  return (
+    <box
+      id={"text-" + props.part.id}
+      paddingLeft={2}
+      marginTop={1}
+      flexDirection="column"
+      border={["left"]}
+      customBorderChars={SplitBorder.customBorderChars}
+      borderColor={theme.accent}
+    >
+      <box flexDirection="row" gap={1} paddingBottom={1}>
+        <text fg={theme.accent}>{emoji()}</text>
+        <text fg={theme.accent} bold={true}>
+          {props.part.agent}
+        </text>
+        <text fg={theme.textMuted}>{scope()}</text>
+        <Show when={props.part.confidence !== undefined}>
+          <text fg={theme.textMuted}>{props.part.confidence}% confidence</text>
+        </Show>
+        <Show when={time()}>
+          <text fg={theme.textMuted}>{time()}</text>
+        </Show>
+      </box>
+      <code
+        filetype="markdown"
+        drawUnstyledText={false}
+        streaming={true}
+        syntaxStyle={theme.syntax}
+        content={props.part.content}
+        fg={theme.text}
+      />
+    </box>
   )
 }
 
