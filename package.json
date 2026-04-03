@@ -20,10 +20,10 @@
   "workspaces": {
     "packages": [
       "packages/*",
-      "packages/console/*",
-      "packages/cortex",
+      
+      "packages/adapters",
       "packages/sdk/js",
-      "packages/slack"
+      
     ],
     "catalog": {
       "@effect/platform-node": "4.0.0-beta.42",

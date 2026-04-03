@@ -1,0 +1,28 @@
+{
+  "name": "@cleansweep-cortex/core",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./server": "./src/plugin.ts",
+    "./*": "./src/*.ts"
+  },
+  "engines": {
+    "opencode": ">=1.0.0"
+  },
+  "oc-plugin": {
+    "targets": [
+      "server"
+    ]
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:",
+    "@types/ssh2": "1.15.5",
+    "ssh2": "1.17.0",
+    "typescript": "catalog:"
+  }
+}
