@@ -270,6 +270,19 @@ export namespace MessageV2 {
   })
   export type StepFinishPart = z.infer<typeof StepFinishPart>
 
+  export const TeamMessagePart = PartBase.extend({
+    type: z.literal("team-message"),
+    agent: z.string(),
+    content: z.string(),
+    confidence: z.number().min(0).max(100).optional(),
+    timestamp: z.number().optional(),
+    broadcast: z.boolean().default(true),
+    recipient: z.string().optional(),
+  }).meta({
+    ref: "TeamMessagePart",
+  })
+  export type TeamMessagePart = z.infer<typeof TeamMessagePart>
+
   export const ToolStatePending = z
     .object({
       status: z.literal("pending"),
@@ -394,6 +407,7 @@ export namespace MessageV2 {
       AgentPart,
       RetryPart,
       CompactionPart,
+      TeamMessagePart,
     ])
     .meta({
       ref: "Part",
