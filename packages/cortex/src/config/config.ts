@@ -1093,6 +1093,23 @@ export namespace Config {
             .describe("Enable the flat real-time collaborative team chatroom (Grok 4.2 style)"),
         })
         .optional(),
+      ssh: z
+        .object({
+          connections: z
+            .record(
+              z.object({
+                name: z.string(),
+                host: z.string(),
+                port: z.number().int().positive().default(22),
+                username: z.string(),
+                password: z.string().optional(),
+                privateKeyPath: z.string().optional(),
+              }),
+            )
+            .optional(),
+          defaultConnection: z.string().optional(),
+        })
+        .optional(),
     })
     .strict()
     .meta({
@@ -1120,9 +1137,7 @@ export namespace Config {
   export class Service extends ServiceMap.Service<Service, Interface>()("@opencode/Config") {}
 
   function globalConfigFile() {
-    const candidates = ["cortex.jsonc", "cortex.json", "config.json"].map((file) =>
-      path.join(Global.Path.config, file),
-    )
+    const candidates = ["cortex.jsonc", "cortex.json", "config.json"].map((file) => path.join(Global.Path.config, file))
     for (const file of candidates) {
       if (existsSync(file)) return file
     }
