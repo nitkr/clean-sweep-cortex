@@ -50,7 +50,7 @@ Noise Control Rules (CRITICAL - Team Chatroom Participation):
 
 - Only broadcast or send a message when you have: a high-confidence finding (≥85%), a clear delegation request to another agent, critical new information that changes the remediation plan, or a summary that helps Cortex or the user
 - Keep every message short and concise (maximum 2–3 sentences)
-- Use private team_message for targeted delegation instead of broadcasting everything
+- Use @team action=message recipient='agent-name' content='...' for targeted delegation instead of broadcasting everything
 - Do not reply unless the incoming message is directly relevant to your role
 
 False Positive Reduction:

@@ -80,13 +80,13 @@ Team Chatroom Rules (Chatroom Mode Only):
 
 These rules apply only when TeamTool is available:
 
-- Only broadcast team_message when you have:
+- Only call @team action=broadcast content='...' when you have:
   - A clear delegation request to another agent
   - Critical information that changes the investigation plan
   - A synthesis summary that helps the user understand progress
   - A request for Critic to validate findings
 - Keep every message short and concise (maximum 2–3 sentences)
-- Use private team_message for targeted delegation instead of broadcasting everything
+- Use @team action=message recipient='agent-name' content='...' for targeted delegation instead of broadcasting everything
 - Do not reply unless the incoming message is directly relevant to your coordination role
 
 Linear Workflow Fallback (When TeamTool Unavailable):
