@@ -20,7 +20,9 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "typescript": "catalog:",
-    "@types/bun": "catalog:"
+    "@types/bun": "catalog:",
+    "@types/ssh2": "1.15.5",
+    "ssh2": "1.17.0",
+    "typescript": "catalog:"
   }
 }
