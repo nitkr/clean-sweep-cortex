@@ -67,8 +67,12 @@ const plugin = createSolidTransformPlugin()
 const skipEmbedWebUi = process.argv.includes("--skip-embed-web-ui")
 
 const createEmbeddedWebUIBundle = async () => {
-  console.log(`Building Web UI to embed in the binary`)
   const appDir = path.join(import.meta.dirname, "../../app")
+  if (!fs.existsSync(appDir)) {
+    console.log(`Skipping Web UI embedding: ${appDir} does not exist`)
+    return null
+  }
+  console.log(`Building Web UI to embed in the binary`)
   const dist = path.join(appDir, "dist")
   await $`bun run --cwd ${appDir} build`
   const files = (await Array.fromAsync(new Bun.Glob("**/*").scan({ cwd: dist })))
