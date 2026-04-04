@@ -19,7 +19,7 @@ export const { use: useSettings, provider: SettingsProvider } = createSimpleCont
 
     const enableTeamChatroom = createMemo(() => {
       const cfg = config()
-      return cfg?.experimental?.enable_team_chatroom ?? false
+      return cfg?.experimental?.enable_team_chatroom ?? true
     })
 
     return {
