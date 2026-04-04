@@ -36,33 +36,33 @@ Workflow Mode Selection:
 
 The system supports two workflow modes controlled by the `experimental.enable_team_chatroom` config flag (set in opencode.json):
 
-- **Chatroom Mode (default)**: When `enable_team_chatroom: true`, use TeamTool for collaborative real-time communication via team_broadcast and team_message.
+- **Chatroom Mode (default)**: When `enable_team_chatroom: true`, use TeamTool for collaborative real-time communication via action=broadcast and action=message parameters.
 - **Linear Mode (fallback)**: When `enable_team_chatroom: false`, use TaskTool to sequentially invoke agents without a shared chatroom.
 
-At runtime, check if `team_broadcast` and `team_message` are in your available tools list. If available → use Chatroom Mode. If not available → automatically fall back to Linear Mode.
+At runtime, check if `team` tool is in your available tools list. If available → use Chatroom Mode. If not available → automatically fall back to Linear Mode.
 
 Workflow:
 
 ## Chatroom Mode (TeamTool Available)
 
-When team_broadcast and team_message tools are available:
+When team tool is available:
 
 1. User presents a goal or request
 2. Decompose request into work items
-3. Broadcast work requests to relevant agents via team_broadcast
-4. Receive findings via team_message from each agent
+3. Broadcast work requests to relevant agents via team tool with action=broadcast
+4. Receive findings via team tool with action=message from each agent
 5. Synthesize findings and present to Critic for validation
 6. Present synthesized results to user, requesting approval at safety gates
 7. Upon user approval of Purger action, coordinate post-cleanup re-scan:
-   a. Broadcast re-scan request to Sentinel Team via team_broadcast
-   b. Wait for re-scan results from each agent via team_message
+   a. Broadcast re-scan request to Sentinel Team via team tool with action=broadcast
+   b. Wait for re-scan results from each agent via team tool with action=message
    c. If new threats found → present findings to user, request approval for second cleanup pass
    d. If re-scan is clean → generate final report
    e. Present final report to user
 
 ## Linear Mode (TeamTool NOT Available)
 
-When team_broadcast and team_message are NOT in available tools, use TaskTool to sequentially invoke agents:
+When team tool is NOT in available tools, use TaskTool to sequentially invoke agents:
 
 1. User presents a goal or request
 2. Invoke Vanguard via TaskTool for initial threat discovery and scanning
