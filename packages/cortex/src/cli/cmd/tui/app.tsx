@@ -41,6 +41,7 @@ import { DialogWorkspaceList } from "@tui/component/dialog-workspace-list"
 import { KeybindProvider, useKeybind } from "@tui/context/keybind"
 import { ThemeProvider, useTheme } from "@tui/context/theme"
 import { SSHProvider } from "./context/ssh"
+import { SettingsProvider } from "./context/settings"
 import { Home } from "@tui/routes/home"
 import { Session } from "@tui/routes/session"
 import { PromptHistoryProvider } from "./component/prompt/history"
@@ -219,19 +220,21 @@ export function tui(input: {
                             <LocalProvider>
                               <KeybindProvider>
                                 <PromptStashProvider>
-                                  <DialogProvider>
-                                    <CommandProvider>
-                                      <SSHProvider>
-                                        <FrecencyProvider>
-                                          <PromptHistoryProvider>
-                                            <PromptRefProvider>
-                                              <App onSnapshot={input.onSnapshot} />
-                                            </PromptRefProvider>
-                                          </PromptHistoryProvider>
-                                        </FrecencyProvider>
-                                      </SSHProvider>
-                                    </CommandProvider>
-                                  </DialogProvider>
+                                  <SettingsProvider>
+                                    <DialogProvider>
+                                      <CommandProvider>
+                                        <SSHProvider>
+                                          <FrecencyProvider>
+                                            <PromptHistoryProvider>
+                                              <PromptRefProvider>
+                                                <App onSnapshot={input.onSnapshot} />
+                                              </PromptRefProvider>
+                                            </PromptHistoryProvider>
+                                          </FrecencyProvider>
+                                        </SSHProvider>
+                                      </CommandProvider>
+                                    </DialogProvider>
+                                  </SettingsProvider>
                                 </PromptStashProvider>
                               </KeybindProvider>
                             </LocalProvider>
