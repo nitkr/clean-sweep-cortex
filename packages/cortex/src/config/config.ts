@@ -288,7 +288,9 @@ export namespace Config {
 
       const patterns = ["/.opencode/agent/", "/.opencode/agents/", "/agent/", "/agents/"]
       const file = rel(item, patterns) ?? path.basename(item)
-      const agentName = trim(file)
+      const trimmed = trim(file)
+      const isReadme = path.basename(trimmed).toLowerCase() === "readme"
+      const agentName = isReadme ? path.dirname(trimmed) : trimmed
 
       const config = {
         name: agentName,
