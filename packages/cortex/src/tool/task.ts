@@ -105,6 +105,17 @@ export const TaskTool = Tool.define("task", async (ctx) => {
       const msg = await MessageV2.get({ sessionID: ctx.sessionID, messageID: ctx.messageID })
       if (msg.info.role !== "assistant") throw new Error("Not an assistant message")
 
+      const parentMessages = await Session.messages({ sessionID: ctx.sessionID })
+      const teamMsgs = parentMessages
+        .flatMap((m) => m.parts)
+        .filter((p) => p.type === "team-message")
+        .slice(-5)
+
+      let teamContext = ""
+      if (teamMsgs.length > 0) {
+        teamContext = `\n\nRecent team chatroom messages:\n${teamMsgs.map((p) => `[${p.agent}]: ${p.content}`).join("\n")}\n\n`
+      }
+
       const model = agent.model ?? {
         modelID: msg.info.modelID,
         providerID: msg.info.providerID,
@@ -125,7 +136,8 @@ export const TaskTool = Tool.define("task", async (ctx) => {
       }
       ctx.abort.addEventListener("abort", cancel)
       using _ = defer(() => ctx.abort.removeEventListener("abort", cancel))
-      const promptParts = await SessionPrompt.resolvePromptParts(params.prompt)
+      const enhancedPrompt = teamContext + params.prompt
+      const promptParts = await SessionPrompt.resolvePromptParts(enhancedPrompt)
 
       const result = await SessionPrompt.prompt({
         messageID,
