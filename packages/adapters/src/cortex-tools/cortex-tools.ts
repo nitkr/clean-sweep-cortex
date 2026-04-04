@@ -1,19 +1,23 @@
 import { tool } from "@opencode-ai/plugin"
 import { spawn } from "bun"
 import { WordPressFileAdapter, type FileEntry } from "../adapters/wordpress-file"
+import { siteManager } from "../site-manager"
+;(globalThis as any).__cortexSitePath = (globalThis as any).__cortexSitePath ?? null
 
-let globalSitePath: string | null = null
-
-export function setGlobalSitePath(path: string) {
-  globalSitePath = path
+export function setCortexSitePath(path: string | null) {
+  ;(globalThis as any).__cortexSitePath = path
+  siteManager.setSitePath(path ?? "")
 }
 
-export function getGlobalSitePath(): string | null {
-  return globalSitePath
+export function getCortexSitePath(): string | null {
+  return (globalThis as any).__cortexSitePath
 }
 
 function getAdapter(sitePath?: string): WordPressFileAdapter {
-  const path = sitePath ?? globalSitePath ?? "/home/venturer/myprojects/cleansweep-cortex/test-lab"
+  const path = sitePath ?? (globalThis as any).__cortexSitePath ?? (siteManager.getSitePath() || undefined)
+  if (!path) {
+    throw new Error("No WordPress site path configured. Use @cortex set-site to configure the site.")
+  }
   return new WordPressFileAdapter({ sitePath: path })
 }
 
@@ -120,7 +124,7 @@ export const CortexSetSiteTool = tool({
     path: tool.schema.string().describe("Absolute path to the WordPress site"),
   },
   async execute(args, ctx) {
-    setGlobalSitePath(args.path)
+    setCortexSitePath(args.path)
     return `Site path set to: ${args.path}\n\nCortex tools will now operate on this WordPress installation.`
   },
 })
@@ -129,7 +133,7 @@ export const CortexGetSiteTool = tool({
   description: "Get the currently active WordPress site path.",
   args: {},
   async execute(args, ctx) {
-    const path = getGlobalSitePath()
+    const path = getCortexSitePath()
     if (!path) {
       return "No site path set. Use @cortex set-site to configure the WordPress installation."
     }

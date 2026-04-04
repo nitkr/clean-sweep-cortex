@@ -7,6 +7,6 @@ export {
   CortexScanTool,
   CortexBackupTool,
   CortexRunCleanSweepTool,
-  setGlobalSitePath,
-  getGlobalSitePath,
+  setCortexSitePath,
+  getCortexSitePath,
 } from "./cortex-tools"

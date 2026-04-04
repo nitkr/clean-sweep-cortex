@@ -1,10 +1,9 @@
 import type { TuiPlugin, TuiPluginApi, TuiPluginModule } from "@opencode-ai/plugin/tui"
 import { createMemo, For, Show, createSignal, onMount } from "solid-js"
 import { Process } from "@/util/process"
+import { siteManager, type DetectedSite } from "@cleansweep-cortex/core/site-manager"
 
 const id = "internal:wordpress-files"
-
-const DEFAULT_SITE = "/home/venturer/myprojects/cleansweep-cortex/test-lab"
 
 interface FileEntry {
   name: string
@@ -16,17 +15,33 @@ interface FileEntry {
 function View(props: { api: TuiPluginApi; session_id: string }) {
   const theme = () => props.api.theme.current
 
-  const sitePath = createMemo(() => props.api.kv.get<string>("wordpress_site_path", DEFAULT_SITE))
+  const sitePath = createMemo(() => props.api.kv.get<string>("wordpress_site_path", undefined))
   const [currentPath, setCurrentPath] = createSignal("")
   const [entries, setEntries] = createSignal<FileEntry[]>([])
   const [expandedDirs, setExpandedDirs] = createSignal<Set<string>>(new Set())
   const [loading, setLoading] = createSignal(false)
   const [error, setError] = createSignal<string | null>(null)
+  const [detectedSites, setDetectedSites] = createSignal<DetectedSite[]>([])
+  const [validationError, setValidationError] = createSignal<string | null>(null)
 
-  const displayPath = createMemo(() => currentPath() || sitePath())
+  const displayPath = createMemo(() => currentPath() || sitePath() || "")
 
-  onMount(() => {
-    loadEntries(displayPath())
+  onMount(async () => {
+    const path = sitePath()
+    if (path) {
+      const validation = await siteManager.validatePath(path)
+      if (!validation.exists) {
+        setValidationError(`Site path does not exist: ${path}`)
+      } else if (!validation.isWordPress) {
+        setValidationError(`Not a WordPress installation: ${path}`)
+      }
+      loadEntries(displayPath())
+    } else {
+      const detected = await siteManager.detectLocalWordPress("/home/venturer/myprojects")
+      const cortexProject = detected.filter((s: DetectedSite) => s.path.includes("cleansweep-cortex"))
+      const other = detected.filter((s: DetectedSite) => !s.path.includes("cleansweep-cortex"))
+      setDetectedSites([...cortexProject, ...other].slice(0, 5))
+    }
   })
 
   const loadEntries = async (dirPath: string) => {
@@ -145,11 +160,26 @@ function View(props: { api: TuiPluginApi; session_id: string }) {
         </text>
       </box>
 
-      <Show when={!sitePath()}>
-        <text fg={theme().textMuted}>No site configured - use @cortex set-site</text>
+      <Show when={validationError()}>
+        <text fg={theme().error}>{validationError()}</text>
       </Show>
 
-      <Show when={sitePath()}>
+      <Show when={!sitePath() && !validationError()}>
+        <text fg={theme().textMuted}>No WordPress site configured</text>
+        <Show when={detectedSites().length > 0}>
+          <text fg={theme().textMuted}>Detected sites:</text>
+          <For each={detectedSites()}>
+            {(site) => (
+              <text fg={theme().primary} wrapMode="none">
+                📁 {site.name || site.path}
+              </text>
+            )}
+          </For>
+        </Show>
+        <text fg={theme().textMuted}>Use @cortex set-site to configure</text>
+      </Show>
+
+      <Show when={sitePath() && !validationError()}>
         <text fg={theme().textMuted} wrapMode="none">
           {displayPath()}
         </text>

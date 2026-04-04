@@ -32,8 +32,8 @@ export {
   CortexAnalyzeFileTool,
   CortexSetSiteTool,
   CortexGetSiteTool,
-  setGlobalSitePath,
-  getGlobalSitePath,
+  setCortexSitePath,
+  getCortexSitePath,
 } from "./cortex-tools/index"
 export { CortexPlugin, default } from "./plugin"
 export type {
