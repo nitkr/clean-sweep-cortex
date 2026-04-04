@@ -2,6 +2,9 @@ import type { TuiPlugin, TuiPluginApi, TuiPluginModule } from "@opencode-ai/plug
 import { createMemo, For, Show, createSignal, onMount } from "solid-js"
 import { Process } from "@/util/process"
 import { siteManager, type DetectedSite } from "@cleansweep-cortex/core/site-manager"
+import { connectionManager } from "@cleansweep-cortex/core/connection-manager"
+
+type ConnectionStatus = { type: "ssh"; name: string } | { type: "local" }
 
 const id = "internal:wordpress-files"
 
@@ -23,6 +26,14 @@ function View(props: { api: TuiPluginApi; session_id: string }) {
   const [error, setError] = createSignal<string | null>(null)
   const [detectedSites, setDetectedSites] = createSignal<DetectedSite[]>([])
   const [validationError, setValidationError] = createSignal<string | null>(null)
+
+  const connectionStatus = createMemo<ConnectionStatus>(() => {
+    if (connectionManager.isConnected()) {
+      const conn = connectionManager.getActiveConnection()
+      if (conn) return { type: "ssh", name: conn.name }
+    }
+    return { type: "local" }
+  })
 
   const displayPath = createMemo(() => currentPath() || sitePath() || "")
 
@@ -149,15 +160,34 @@ function View(props: { api: TuiPluginApi; session_id: string }) {
     return expandedDirs().has(fullPath)
   }
 
+  const connectionName = createMemo(() => {
+    const status = connectionStatus()
+    return status.type === "ssh" ? status.name : null
+  })
+
   return (
     <box>
       <box flexDirection="row" justifyContent="space-between" alignItems="center">
         <text fg={theme().text}>
           <b>WordPress Site</b>
         </text>
-        <text fg={theme().textMuted} onMouseDown={refresh}>
-          🔄
-        </text>
+        <box flexDirection="row" gap={2}>
+          <Show
+            when={connectionName()}
+            fallback={
+              <text fg={theme().textMuted} wrapMode="none">
+                💻 Local
+              </text>
+            }
+          >
+            <text fg={theme().primary} wrapMode="none">
+              🔗 SSH: {connectionName()}
+            </text>
+          </Show>
+          <text fg={theme().textMuted} onMouseDown={refresh}>
+            🔄
+          </text>
+        </box>
       </box>
 
       <Show when={validationError()}>
@@ -176,7 +206,12 @@ function View(props: { api: TuiPluginApi; session_id: string }) {
             )}
           </For>
         </Show>
-        <text fg={theme().textMuted}>Use @cortex set-site to configure</text>
+        <text fg={theme().textMuted} wrapMode="none">
+          💻 Local: Use @cortex set-site to configure
+        </text>
+        <text fg={theme().textMuted} wrapMode="none">
+          🔗 Remote: Use @cortex connect to connect to a server
+        </text>
       </Show>
 
       <Show when={sitePath() && !validationError()}>
