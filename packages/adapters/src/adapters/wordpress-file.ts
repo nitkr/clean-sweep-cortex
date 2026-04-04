@@ -1,5 +1,6 @@
 import { spawn } from "bun"
 import path from "path"
+import { existsSync } from "fs"
 
 export interface FileEntry {
   name: string
@@ -20,7 +21,22 @@ export class WordPressFileAdapter {
 
   constructor(config: WordPressFileAdapterConfig) {
     this.sitePath = config.sitePath
-    this.cliPath = config.cliPath ?? "/home/venturer/myprojects/cleansweep-cortex/bin/clean-sweep"
+    this.cliPath = config.cliPath ?? this.resolveCleanSweepPath()
+  }
+
+  private resolveCleanSweepPath(): string {
+    const cwd = process.cwd()
+    const possiblePaths = [
+      path.join(cwd, "node_modules", ".bin", "clean-sweep"),
+      path.join(cwd, "..", "..", "node_modules", ".bin", "clean-sweep"),
+      path.join(cwd, "node_modules", "clean-sweep", "bin", "clean-sweep"),
+    ]
+    for (const p of possiblePaths) {
+      if (existsSync(p)) {
+        return p
+      }
+    }
+    return "/home/venturer/myprojects/cleansweep-cortex/bin/clean-sweep"
   }
 
   async listFiles(targetPath?: string): Promise<FileEntry[]> {

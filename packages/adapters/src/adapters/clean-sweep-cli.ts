@@ -10,6 +10,8 @@ import type {
   RemediationAction,
 } from "../types"
 import { spawn } from "bun"
+import path from "path"
+import { existsSync } from "fs"
 
 export class CleanSweepCLIAdapter extends RemediationBackend {
   readonly config = {
@@ -20,9 +22,24 @@ export class CleanSweepCLIAdapter extends RemediationBackend {
 
   private readonly cliPath: string
 
-  constructor(cliPath = "./bin/clean-sweep") {
+  constructor(cliPath?: string) {
     super()
-    this.cliPath = cliPath
+    this.cliPath = cliPath ?? this.resolveCleanSweepPath()
+  }
+
+  private resolveCleanSweepPath(): string {
+    const cwd = process.cwd()
+    const possiblePaths = [
+      path.join(cwd, "node_modules", ".bin", "clean-sweep"),
+      path.join(cwd, "..", "..", "node_modules", ".bin", "clean-sweep"),
+      path.join(cwd, "node_modules", "clean-sweep", "bin", "clean-sweep"),
+    ]
+    for (const p of possiblePaths) {
+      if (existsSync(p)) {
+        return p
+      }
+    }
+    return "./bin/clean-sweep"
   }
 
   async scan(target: string): Promise<ScanResult> {
