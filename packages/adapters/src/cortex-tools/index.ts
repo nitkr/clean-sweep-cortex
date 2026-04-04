@@ -10,3 +10,11 @@ export {
   setCortexSitePath,
   getCortexSitePath,
 } from "./cortex-tools"
+export {
+  CortexConnectTool,
+  CortexDisconnectTool,
+  CortexConnectionsTool,
+  CortexAddConnectionTool,
+  CortexRemoveConnectionTool,
+  CortexTestConnectionTool,
+} from "./connection-tools"

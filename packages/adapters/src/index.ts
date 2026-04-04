@@ -32,9 +32,19 @@ export {
   CortexAnalyzeFileTool,
   CortexSetSiteTool,
   CortexGetSiteTool,
+  CortexConnectTool,
+  CortexDisconnectTool,
+  CortexConnectionsTool,
+  CortexAddConnectionTool,
+  CortexRemoveConnectionTool,
+  CortexTestConnectionTool,
+  CortexScanTool,
+  CortexBackupTool,
+  CortexRunCleanSweepTool,
   setCortexSitePath,
   getCortexSitePath,
 } from "./cortex-tools/index"
+export { ConnectionManager, connectionManager, type SSHConnectionConfig } from "./connection-manager"
 export { CortexPlugin, default } from "./plugin"
 export type {
   SweepSession,

@@ -9,6 +9,12 @@ import {
   CortexScanTool,
   CortexBackupTool,
   CortexRunCleanSweepTool,
+  CortexConnectTool,
+  CortexDisconnectTool,
+  CortexConnectionsTool,
+  CortexAddConnectionTool,
+  CortexRemoveConnectionTool,
+  CortexTestConnectionTool,
 } from "./cortex-tools/index"
 
 export const CortexPlugin: Plugin = async () => {
@@ -68,6 +74,48 @@ export const CortexPlugin: Plugin = async () => {
         args: CortexRunCleanSweepTool.args,
         async execute(args, ctx) {
           return CortexRunCleanSweepTool.execute(args, ctx)
+        },
+      }),
+      connect: tool({
+        description: CortexConnectTool.description,
+        args: CortexConnectTool.args,
+        async execute(args, ctx) {
+          return CortexConnectTool.execute(args, ctx)
+        },
+      }),
+      disconnect: tool({
+        description: CortexDisconnectTool.description,
+        args: CortexDisconnectTool.args,
+        async execute(args, ctx) {
+          return CortexDisconnectTool.execute(args, ctx)
+        },
+      }),
+      connections: tool({
+        description: CortexConnectionsTool.description,
+        args: CortexConnectionsTool.args,
+        async execute(args, ctx) {
+          return CortexConnectionsTool.execute(args, ctx)
+        },
+      }),
+      "add-connection": tool({
+        description: CortexAddConnectionTool.description,
+        args: CortexAddConnectionTool.args,
+        async execute(args, ctx) {
+          return CortexAddConnectionTool.execute(args, ctx)
+        },
+      }),
+      "remove-connection": tool({
+        description: CortexRemoveConnectionTool.description,
+        args: CortexRemoveConnectionTool.args,
+        async execute(args, ctx) {
+          return CortexRemoveConnectionTool.execute(args, ctx)
+        },
+      }),
+      "test-connection": tool({
+        description: CortexTestConnectionTool.description,
+        args: CortexTestConnectionTool.args,
+        async execute(args, ctx) {
+          return CortexTestConnectionTool.execute(args, ctx)
         },
       }),
     },
