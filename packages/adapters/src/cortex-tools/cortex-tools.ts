@@ -1,6 +1,8 @@
 import { tool } from "@opencode-ai/plugin"
 import { spawn } from "bun"
 import { WordPressFileAdapter, type FileEntry } from "../adapters/wordpress-file"
+import { connectionManager } from "../connection-manager"
+import { createRemoteAdapter } from "../adapters/remote-wordpress-adapter"
 import { siteManager } from "../site-manager"
 ;(globalThis as any).__cortexSitePath = (globalThis as any).__cortexSitePath ?? null
 
@@ -13,12 +15,52 @@ export function getCortexSitePath(): string | null {
   return (globalThis as any).__cortexSitePath
 }
 
-function getAdapter(sitePath?: string): WordPressFileAdapter {
+function getAdapter(sitePath?: string): WordPressFileAdapter | ReturnType<typeof createRemoteAdapter> {
   const path = sitePath ?? (globalThis as any).__cortexSitePath ?? (siteManager.getSitePath() || undefined)
   if (!path) {
     throw new Error("No WordPress site path configured. Use @cortex set-site to configure the site.")
   }
+  if (connectionManager.isConnected()) {
+    const conn = connectionManager.getActiveConnection()
+    if (conn) {
+      return createRemoteAdapter(conn.name, path)
+    }
+  }
   return new WordPressFileAdapter({ sitePath: path })
+}
+
+function getAdapterSitePath(adapter: WordPressFileAdapter | ReturnType<typeof createRemoteAdapter>): string {
+  return adapter.getSitePath()
+}
+
+function runRemoteCommand(
+  command: string,
+  sitePath: string,
+  args?: string[],
+): Promise<{ stdout: string; stderr: string; exitCode: number }> {
+  const client = connectionManager.getActiveClient()
+  if (!client) return Promise.reject(new Error("No active SSH connection"))
+
+  return new Promise((resolve) => {
+    const cmd = `clean-sweep ${command} --path ${sitePath}${args ? ` ${args.join(" ")}` : ""}`
+    client.exec(cmd, (err, stream) => {
+      if (err) {
+        resolve({ stdout: "", stderr: err.message, exitCode: 1 })
+        return
+      }
+      let stdout = ""
+      let stderr = ""
+      stream.on("data", (data: Buffer) => {
+        stdout += data.toString()
+      })
+      stream.stderr.on("data", (data: Buffer) => {
+        stderr += data.toString()
+      })
+      stream.on("close", (code: number) => {
+        resolve({ stdout, stderr, exitCode: code ?? 0 })
+      })
+    })
+  })
 }
 
 export const CortexListFilesTool = tool({
@@ -149,14 +191,20 @@ export const CortexScanTool = tool({
     const adapter = getAdapter()
     const sitePath = adapter.getSitePath()
 
-    const proc = spawn({
-      cmd: [adapter.cliPath, "scan", "--path", sitePath],
-      stdout: "pipe",
-      stderr: "pipe",
-    })
+    let stdout: string
+    let stderr: string
+    let exitCode: number
 
-    const [stdout, stderr] = await Promise.all([new Response(proc.stdout).text(), new Response(proc.stderr).text()])
-    const exitCode = await proc.exited
+    if ("cliPath" in adapter) {
+      const proc = spawn({ cmd: [adapter.cliPath, "scan", "--path", sitePath], stdout: "pipe", stderr: "pipe" })
+      ;[stdout, stderr] = await Promise.all([new Response(proc.stdout).text(), new Response(proc.stderr).text()])
+      exitCode = await proc.exited
+    } else {
+      const result = await runRemoteCommand("scan", sitePath)
+      stdout = result.stdout
+      stderr = result.stderr
+      exitCode = result.exitCode
+    }
 
     if (exitCode !== 0) {
       return `Scan failed: ${stderr || `Exit code: ${exitCode}`}`
@@ -176,14 +224,20 @@ export const CortexBackupTool = tool({
     const sitePath = adapter.getSitePath()
     const targetPath = args.path ?? sitePath
 
-    const proc = spawn({
-      cmd: [adapter.cliPath, "quarantine", "--path", targetPath],
-      stdout: "pipe",
-      stderr: "pipe",
-    })
+    let stdout: string
+    let stderr: string
+    let exitCode: number
 
-    const [stdout, stderr] = await Promise.all([new Response(proc.stdout).text(), new Response(proc.stderr).text()])
-    const exitCode = await proc.exited
+    if ("cliPath" in adapter) {
+      const proc = spawn({ cmd: [adapter.cliPath, "quarantine", "--path", targetPath], stdout: "pipe", stderr: "pipe" })
+      ;[stdout, stderr] = await Promise.all([new Response(proc.stdout).text(), new Response(proc.stderr).text()])
+      exitCode = await proc.exited
+    } else {
+      const result = await runRemoteCommand("quarantine", targetPath)
+      stdout = result.stdout
+      stderr = result.stderr
+      exitCode = result.exitCode
+    }
 
     if (exitCode !== 0) {
       return `Backup/quarantine failed: ${stderr || `Exit code: ${exitCode}`}`
@@ -207,19 +261,27 @@ export const CortexRunCleanSweepTool = tool({
     const sitePath = adapter.getSitePath()
 
     const cmdParts = args.command.split(" ")
-    const cmd = [adapter.cliPath, ...cmdParts, "--path", sitePath]
-    if (args.options) {
-      cmd.push(...args.options.split(" "))
+    let stdout: string
+    let stderr: string
+    let exitCode: number
+
+    if ("cliPath" in adapter) {
+      const cmd = [adapter.cliPath, ...cmdParts, "--path", sitePath]
+      if (args.options) {
+        cmd.push(...args.options.split(" "))
+      }
+      const proc = spawn({ cmd, stdout: "pipe", stderr: "pipe" })
+      ;[stdout, stderr] = await Promise.all([new Response(proc.stdout).text(), new Response(proc.stderr).text()])
+      exitCode = await proc.exited
+    } else {
+      const cmdArgs = args.options
+        ? [...cmdParts, "--path", sitePath, ...args.options.split(" ")]
+        : [...cmdParts, "--path", sitePath]
+      const result = await runRemoteCommand(cmdArgs[0], sitePath, cmdArgs.slice(1))
+      stdout = result.stdout
+      stderr = result.stderr
+      exitCode = result.exitCode
     }
-
-    const proc = spawn({
-      cmd,
-      stdout: "pipe",
-      stderr: "pipe",
-    })
-
-    const [stdout, stderr] = await Promise.all([new Response(proc.stdout).text(), new Response(proc.stderr).text()])
-    const exitCode = await proc.exited
 
     if (exitCode !== 0) {
       return `Command failed: ${stderr || `Exit code: ${exitCode}`}`
