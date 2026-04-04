@@ -1,5 +1,5 @@
 import { createMemo, createSignal } from "solid-js"
-import { useSSH, type SSHConnection } from "@tui/context/ssh"
+import { useSSH, type SSHConnection } from "../context/ssh"
 import { map, pipe, entries, sortBy } from "remeda"
 import { DialogSelect, type DialogSelectRef, type DialogSelectOption } from "@tui/ui/dialog-select"
 import { useTheme } from "../context/theme"
