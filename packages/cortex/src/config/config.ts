@@ -1364,6 +1364,11 @@ export namespace Config {
             )) {
               result = mergeConfigConcatArrays(result, yield* loadFile(file))
             }
+            for (const file of yield* Effect.promise(() =>
+              ConfigPaths.projectFiles("cortex", ctx.directory, ctx.worktree),
+            )) {
+              result = mergeConfigConcatArrays(result, yield* loadFile(file))
+            }
           }
 
           result.agent = result.agent || {}
