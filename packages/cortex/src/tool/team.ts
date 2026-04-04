@@ -22,7 +22,8 @@ export const TeamTool = Tool.define("team", async () => {
         return {
           title: "Team Chatroom Disabled",
           metadata: {},
-          output: "Team chatroom is not enabled. Set experimental.enable_team_chatroom to true in your config.",
+          output:
+            "Team chatroom is not enabled. Enable it via Settings to use team collaboration features. Note: Historical messages are not stored when disabled.",
         }
       }
 
