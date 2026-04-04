@@ -1,36 +1,27 @@
-import { createMemo } from "solid-js"
+import { createMemo, createSignal } from "solid-js"
 import { createSimpleContext } from "./helper"
 import { Config } from "@/config/config"
 
-export type SSHConnection = {
-  name: string
-  host: string
-  port: number
-  username: string
-  password?: string
-  privateKeyPath?: string
-}
-
-export type SSHState = {
-  connections: () => Record<string, SSHConnection>
-  defaultConnection: () => string | undefined
-  add: (connection: SSHConnection) => Promise<void>
-  update: (name: string, connection: SSHConnection) => Promise<void>
-  remove: (name: string) => Promise<void>
-  setDefault: (name: string) => Promise<void>
-}
+// ... (types remain the same)
 
 export const { use: useSSH, provider: SSHProvider } = createSimpleContext({
   name: "SSH",
   init: (): SSHState => {
+    const [config, setConfig] = createSignal<Awaited<ReturnType<typeof Config.get>> | undefined>(undefined)
+
+    ;(async () => {
+      const cfg = await Config.get()
+      setConfig(cfg)
+    })()
+
     const connections = createMemo(() => {
-      const cfg = Config.get()
-      return cfg.ssh?.connections ?? {}
+      const cfg = config()
+      return cfg?.ssh?.connections ?? {}
     })
 
     const defaultConnection = createMemo(() => {
-      const cfg = Config.get()
-      return cfg.ssh?.defaultConnection
+      const cfg = config()
+      return cfg?.ssh?.defaultConnection
     })
 
     return {

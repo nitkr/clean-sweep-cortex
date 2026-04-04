@@ -1471,7 +1471,7 @@ function TeamMessagePart(props: { last: boolean; part: MessageV2.TeamMessagePart
     >
       <box flexDirection="row" gap={1} paddingBottom={1}>
         <text fg={theme.accent}>{emoji()}</text>
-        <text fg={theme.accent} bold={true}>
+        <text fg={theme.accent} attributes={TextAttributes.BOLD}>
           {props.part.agent}
         </text>
         <text fg={theme.textMuted}>{scope()}</text>
@@ -1486,7 +1486,7 @@ function TeamMessagePart(props: { last: boolean; part: MessageV2.TeamMessagePart
         filetype="markdown"
         drawUnstyledText={false}
         streaming={true}
-        syntaxStyle={theme.syntax}
+        syntaxStyle={syntax()}
         content={props.part.content}
         fg={theme.text}
       />

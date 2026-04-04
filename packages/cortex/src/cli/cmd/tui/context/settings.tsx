@@ -1,4 +1,4 @@
-import { createMemo } from "solid-js"
+import { createMemo, createSignal } from "solid-js"
 import { createSimpleContext } from "./helper"
 import { Config } from "@/config/config"
 
@@ -10,9 +10,16 @@ export type SettingsState = {
 export const { use: useSettings, provider: SettingsProvider } = createSimpleContext({
   name: "Settings",
   init: (): SettingsState => {
+    const [config, setConfig] = createSignal<Awaited<ReturnType<typeof Config.get>> | undefined>(undefined)
+
+    ;(async () => {
+      const cfg = await Config.get()
+      setConfig(cfg)
+    })()
+
     const enableTeamChatroom = createMemo(() => {
-      const cfg = Config.get()
-      return cfg.experimental?.enable_team_chatroom ?? false
+      const cfg = config()
+      return cfg?.experimental?.enable_team_chatroom ?? false
     })
 
     return {

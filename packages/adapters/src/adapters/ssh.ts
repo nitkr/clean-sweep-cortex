@@ -1,4 +1,5 @@
-import { Client, ConnectConfig } from "ssh2"
+import { Client } from "ssh2"
+import type { ConnectConfig } from "ssh2"
 import { readFileSync } from "fs"
 import { RemediationBackend } from "../backend"
 import type {

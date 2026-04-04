@@ -1097,6 +1097,7 @@ export namespace Config {
         .object({
           connections: z
             .record(
+              z.string(),
               z.object({
                 name: z.string(),
                 host: z.string(),

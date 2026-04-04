@@ -47,7 +47,8 @@ export namespace ShareNext {
 
     const active = await Account.active()
     if (!active?.active_org_id) {
-      const baseUrl = await Config.get().then((x) => x.enterprise?.url ?? "https://opncd.ai")
+      const cfg = await Config.get()
+      const baseUrl = cfg.enterprise?.url ?? "https://opncd.ai"
       return { headers, api: legacyApi, baseUrl }
     }
 
@@ -160,7 +161,7 @@ export namespace ShareNext {
       }
     | {
         type: "part"
-        data: SDK.Part
+        data: MessageV2.Part
       }
     | {
         type: "session_diff"
