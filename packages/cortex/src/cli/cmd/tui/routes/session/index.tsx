@@ -1444,7 +1444,7 @@ function ReasoningPart(props: { last: boolean; part: ReasoningPart; message: Ass
 }
 
 function TeamMessagePart(props: { last: boolean; part: MessageV2.TeamMessagePart; message: AssistantMessage }) {
-  const { theme } = useTheme()
+  const { theme, syntax } = useTheme()
   const emoji = createMemo(() => {
     const confidence = props.part.confidence
     if (confidence === undefined) return "💬"
