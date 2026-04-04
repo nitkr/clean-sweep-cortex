@@ -94,5 +94,23 @@ export function formatPart(part: Part, options: TranscriptOptions): string {
     return result
   }
 
+  if ((part as any).type === "team-message") {
+    const tp = part as any
+    let result = `**[Team] ${tp.agent}:** ${tp.content}`
+    if (tp.confidence !== undefined) {
+      result += ` (${tp.confidence}%)`
+    }
+    if (!tp.broadcast && tp.recipient) {
+      result += ` → ${tp.recipient}`
+    } else if (!tp.broadcast) {
+      result += ` (private)`
+    }
+    if (tp.timestamp) {
+      result += ` [${new Date(tp.timestamp).toLocaleTimeString()}]`
+    }
+    result += `\n\n`
+    return result
+  }
+
   return ""
 }

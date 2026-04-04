@@ -76,7 +76,7 @@ export class CleanSweepCLIAdapter extends RemediationBackend {
     }
   }
 
-  async verify(cleanResults: CleanResult): Promise<VerifyResult> {
+  async verify(cleanResults: CleanResult, originalScan?: ScanResult): Promise<VerifyResult> {
     const id = crypto.randomUUID()
     const timestamp = Date.now()
 
@@ -106,7 +106,46 @@ export class CleanSweepCLIAdapter extends RemediationBackend {
       details: permissionsResult.success ? "Permissions checks passed" : permissionsResult.error,
     })
 
-    const verified = checks.every((c) => c.passed)
+    let verified = checks.every((c) => c.passed)
+    let reScanned = false
+    let reScanFindings: Finding[] = []
+    let remainingThreats = 0
+    let newThreats = 0
+
+    if (originalScan) {
+      reScanned = true
+      const reScanResult = await this.scan(originalScan.target)
+      reScanFindings = reScanResult.findings
+
+      const originalThreatIds = new Set(originalScan.findings.filter((f) => f.type !== "clean").map((f) => f.id))
+      const reScanThreatIds = new Set(reScanResult.findings.filter((f) => f.type !== "clean").map((f) => f.id))
+
+      remainingThreats = [...reScanThreatIds].filter((id) => originalThreatIds.has(id)).length
+      newThreats = [...reScanThreatIds].filter((id) => !originalThreatIds.has(id)).length
+
+      if (remainingThreats > 0 || newThreats > 0) {
+        verified = false
+      }
+
+      checks.push({
+        name: "re_scan",
+        passed: remainingThreats === 0 && newThreats === 0,
+        details:
+          remainingThreats === 0 && newThreats === 0
+            ? "No remaining threats or re-infections detected"
+            : `Remaining: ${remainingThreats}, New: ${newThreats}`,
+      })
+    }
+
+    const report = {
+      filesScanned: reScanned ? reScanFindings.length : 0,
+      threatsRemoved: cleanResults.summary.succeeded,
+      integrityRestored: verified,
+      hardeningApplied: checks.find((c) => c.name === "hardening")?.passed ?? false,
+      reScanned,
+      remainingThreats,
+      newThreats,
+    }
 
     return {
       id,
@@ -114,12 +153,7 @@ export class CleanSweepCLIAdapter extends RemediationBackend {
       timestamp,
       verified,
       checks,
-      report: {
-        filesScanned: 0,
-        threatsRemoved: cleanResults.summary.succeeded,
-        integrityRestored: verified,
-        hardeningApplied: checks.find((c) => c.name === "hardening")?.passed ?? false,
-      },
+      report,
     }
   }
 
