@@ -30,6 +30,7 @@ import { LocalProvider, useLocal } from "@tui/context/local"
 import { DialogModel, useConnected } from "@tui/component/dialog-model"
 import { DialogMcp } from "@tui/component/dialog-mcp"
 import { DialogSSH } from "@tui/component/dialog-ssh"
+import { DialogSettings } from "@tui/component/dialog-settings"
 import { DialogStatus } from "@tui/component/dialog-status"
 import { DialogThemeList } from "@tui/component/dialog-theme-list"
 import { DialogHelp } from "./ui/dialog-help"
@@ -580,6 +581,17 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
       },
       onSelect: () => {
         dialog.replace(() => <DialogSSH />)
+      },
+    },
+    {
+      title: "Experimental settings",
+      value: "settings.experimental",
+      category: "Settings",
+      slash: {
+        name: "settings",
+      },
+      onSelect: () => {
+        dialog.replace(() => <DialogSettings />)
       },
     },
     {
