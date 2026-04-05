@@ -28,6 +28,8 @@ export const { use: useSettings, provider: SettingsProvider } = createSimpleCont
         const cfg = await Config.get()
         const experimental = cfg.experimental ?? {}
         await Config.update({ experimental: { ...experimental, enable_team_chatroom: value } })
+        const updated = await Config.get()
+        setConfig(updated)
       },
     }
   },
