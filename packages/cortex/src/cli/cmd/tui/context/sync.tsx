@@ -362,12 +362,24 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
           setStore("vcs", { branch: event.properties.branch })
           break
         }
+      }
 
-        case "team.message.added": {
-          const msg = event.properties.teamMessage
-          setStore("teamMessage", msg.id, msg)
-          break
-        }
+      if ((event.type as string) === "team.message.added") {
+        const msg = (
+          event.properties as {
+            teamMessage: {
+              id: string
+              agent: string
+              content: string
+              confidence?: number
+              timestamp: number
+              broadcast: boolean
+              recipient?: string
+              sessionID?: string
+            }
+          }
+        ).teamMessage
+        setStore("teamMessage", msg.id, msg)
       }
     })
 

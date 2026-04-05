@@ -49,7 +49,7 @@ export const TeamTool = Tool.define("team", async () => {
         sessionID: ctx.sessionID,
       }
 
-      SyncEvent.run(SyncEvent.TeamMessageAdded, { teamMessage })
+      SyncEvent.run(SyncEvent.TeamMessageAdded, { teamMessage } as any)
 
       const teamPart: MessageV2.TeamMessagePart = {
         id: partID,

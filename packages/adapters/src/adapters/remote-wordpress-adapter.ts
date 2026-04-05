@@ -1,6 +1,6 @@
 import { Client } from "ssh2"
 import path from "path"
-import { FileEntry } from "./wordpress-file"
+import type { FileEntry } from "./wordpress-file"
 import { connectionManager } from "../connection-manager"
 
 export class RemoteAdapter {

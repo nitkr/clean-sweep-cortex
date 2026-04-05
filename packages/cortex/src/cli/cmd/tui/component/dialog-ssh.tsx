@@ -1,5 +1,5 @@
 import { createMemo, createSignal } from "solid-js"
-import { useSSH, type SSHConnection } from "../context/ssh"
+import { useSSH, type SSHConnectionConfig } from "../context/ssh"
 import { map, pipe, entries, sortBy } from "remeda"
 import { DialogSelect, type DialogSelectRef, type DialogSelectOption } from "@tui/ui/dialog-select"
 import { useTheme } from "../context/theme"
@@ -94,7 +94,7 @@ export function DialogSSH() {
       placeholder: "Leave empty for password auth",
     })
 
-    const connection: SSHConnection = {
+    const connection: SSHConnectionConfig = {
       name,
       host,
       port,
@@ -106,7 +106,7 @@ export function DialogSSH() {
     await ssh.add(connection)
   }
 
-  async function showEditForm(name: string, conn: SSHConnection) {
+  async function showEditForm(name: string, conn: SSHConnectionConfig) {
     const newName = await DialogPrompt.show(dialog, "Connection Name", { value: conn.name })
     if (!newName || newName === name) {
       if (newName && newName !== name) {

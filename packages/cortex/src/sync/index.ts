@@ -276,6 +276,6 @@ export namespace SyncEvent {
         recipient: z.string().optional(),
         sessionID: z.string().optional(),
       }),
-    }),
+    }) as any,
   })
 }

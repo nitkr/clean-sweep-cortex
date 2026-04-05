@@ -1,8 +1,17 @@
-import { createMemo, createSignal } from "solid-js"
+import { createMemo, createSignal, type Accessor } from "solid-js"
 import { createSimpleContext } from "./helper"
 import { Config } from "@/config/config"
+import type { SSHConnectionConfig } from "@cleansweep-cortex/core"
+export type { SSHConnectionConfig }
 
-// ... (types remain the same)
+export interface SSHState {
+  connections: Accessor<Record<string, SSHConnectionConfig>>
+  defaultConnection: Accessor<string | undefined>
+  add(connection: SSHConnectionConfig): Promise<void>
+  update(name: string, connection: SSHConnectionConfig): Promise<void>
+  remove(name: string): Promise<void>
+  setDefault(name: string): Promise<void>
+}
 
 export const { use: useSSH, provider: SSHProvider } = createSimpleContext({
   name: "SSH",
@@ -27,14 +36,14 @@ export const { use: useSSH, provider: SSHProvider } = createSimpleContext({
     return {
       connections,
       defaultConnection,
-      async add(connection: SSHConnection) {
+      async add(connection: SSHConnectionConfig) {
         const cfg = await Config.get()
         const ssh = cfg.ssh ?? {}
         const conns = ssh.connections ?? {}
         conns[connection.name] = connection
         await Config.update({ ssh: { ...ssh, connections: conns } })
       },
-      async update(name: string, connection: SSHConnection) {
+      async update(name: string, connection: SSHConnectionConfig) {
         const cfg = await Config.get()
         const ssh = cfg.ssh ?? {}
         const conns = ssh.connections ?? {}

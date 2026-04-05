@@ -30,7 +30,7 @@ export const TaskTool = Tool.define("task", async (ctx) => {
   const allAgents = await Agent.list()
   const caller = ctx?.agent
   const callerIsPrimary = caller
-    ? ["primary", "all"].includes(allAgents.find((a) => a.name === caller.name)?.mode)
+    ? ["primary", "all"].includes(allAgents.find((a) => a.name === caller.name)?.mode ?? "")
     : false
 
   // Filter agents by permissions if agent provided
