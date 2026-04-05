@@ -4,7 +4,6 @@ import { Session } from "../session"
 import { PartID } from "../session/schema"
 import { MessageV2 } from "../session/message-v2"
 import { Config } from "../config/config"
-import { Bus } from "@/bus"
 import { SyncEvent } from "@/sync"
 
 export const TeamTool = Tool.define("team", async () => {
@@ -48,7 +47,7 @@ export const TeamTool = Tool.define("team", async () => {
       }
 
       // Publish to event bus for real-time sync across all sessions
-      Bus.publish(SyncEvent.TeamMessageAdded, { teamMessage })
+      SyncEvent.run(SyncEvent.TeamMessageAdded, { teamMessage })
 
       // Keep existing Session.updatePart for backward compatibility
       const teamPart: MessageV2.TeamMessagePart = {
