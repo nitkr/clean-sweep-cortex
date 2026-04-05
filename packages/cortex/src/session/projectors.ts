@@ -132,4 +132,9 @@ export default [
       log.warn("ignored late part update", { partID: id, messageID, sessionID })
     }
   }),
+
+  SyncEvent.project(SyncEvent.TeamMessageAdded, (db, data) => {
+    // Team messages are stored via Session.updatePart - this projector just handles the event for real-time sync
+    // data.teamMessage contains: { id, agent, content, confidence, timestamp, broadcast, recipient, sessionID }
+  }),
 ]
