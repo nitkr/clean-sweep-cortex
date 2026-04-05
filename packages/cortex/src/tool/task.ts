@@ -27,9 +27,13 @@ const parameters = z.object({
 
 export const TaskTool = Tool.define("task", async (ctx) => {
   const agents = await Agent.list().then((x) => x.filter((a) => a.mode !== "primary"))
+  const allAgents = await Agent.list()
+  const caller = ctx?.agent
+  const callerIsPrimary = caller
+    ? ["primary", "all"].includes(allAgents.find((a) => a.name === caller.name)?.mode)
+    : false
 
   // Filter agents by permissions if agent provided
-  const caller = ctx?.agent
   const accessibleAgents = caller
     ? agents.filter((a) => Permission.evaluate("task", a.name, caller.permission).action !== "deny")
     : agents
@@ -48,7 +52,8 @@ export const TaskTool = Tool.define("task", async (ctx) => {
       const config = await Config.get()
 
       // Skip permission check when user explicitly invoked via @ or command subtask
-      if (!ctx.extra?.bypassAgentCheck) {
+      // Also skip for primary agents orchestrating subagents
+      if (!ctx.extra?.bypassAgentCheck && !callerIsPrimary) {
         await ctx.ask({
           permission: "task",
           patterns: [params.subagent_type],
