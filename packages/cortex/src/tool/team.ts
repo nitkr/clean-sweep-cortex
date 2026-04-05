@@ -1,10 +1,13 @@
 import { Tool } from "./tool"
 import z from "zod"
 import { Session } from "../session"
-import { PartID } from "../session/schema"
+import { PartID, MessageID } from "../session/schema"
 import { MessageV2 } from "../session/message-v2"
 import { Config } from "../config/config"
 import { SyncEvent } from "@/sync"
+import { Agent } from "../agent/agent"
+import { SessionPrompt } from "../session/prompt"
+import { defer } from "@/util/defer"
 
 export const TeamTool = Tool.define("team", async () => {
   return {
@@ -64,6 +67,31 @@ export const TeamTool = Tool.define("team", async () => {
       }
 
       await Session.updatePart(teamPart)
+
+      const spawnSubagent = async (recipient: string) => {
+        const agent = await Agent.get(recipient)
+        if (!agent) return
+        const session = await Session.create({
+          parentID: ctx.sessionID,
+          title: `team message to ${recipient}`,
+        })
+        const messageID = MessageID.ascending()
+        SessionPrompt.prompt({
+          messageID,
+          sessionID: session.id,
+          model: agent.model,
+          agent: agent.name,
+          parts: [{ type: "text", text: params.content }],
+        })
+      }
+
+      if (params.action === "message" && params.recipient) {
+        spawnSubagent(params.recipient)
+      } else if (params.action === "broadcast") {
+        const agents = await Agent.list()
+        const subagents = agents.filter((a) => a.mode !== "primary")
+        subagents.forEach((agent) => spawnSubagent(agent.name))
+      }
 
       const action = params.action === "broadcast" ? "broadcast" : `message to ${params.recipient}`
       return {
