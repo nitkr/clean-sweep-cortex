@@ -4,6 +4,8 @@ import { Session } from "../session"
 import { PartID } from "../session/schema"
 import { MessageV2 } from "../session/message-v2"
 import { Config } from "../config/config"
+import { Bus } from "@/bus"
+import { SyncEvent } from "@/sync"
 
 export const TeamTool = Tool.define("team", async () => {
   return {
@@ -34,6 +36,21 @@ export const TeamTool = Tool.define("team", async () => {
       const partID = PartID.ascending()
       const now = Date.now()
 
+      const teamMessage = {
+        id: partID,
+        agent: ctx.agent,
+        content: params.content,
+        confidence: params.confidence,
+        timestamp: now,
+        broadcast: params.action === "broadcast",
+        recipient: params.action === "message" ? params.recipient : undefined,
+        sessionID: ctx.sessionID,
+      }
+
+      // Publish to event bus for real-time sync across all sessions
+      Bus.publish(SyncEvent.TeamMessageAdded, { teamMessage })
+
+      // Keep existing Session.updatePart for backward compatibility
       const teamPart: MessageV2.TeamMessagePart = {
         id: partID,
         sessionID: ctx.sessionID,

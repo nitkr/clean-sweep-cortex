@@ -260,4 +260,22 @@ export namespace SyncEvent {
         ref: "SyncEvent",
       })
   }
+
+  export const TeamMessageAdded = SyncEvent.define({
+    type: "team.message.added",
+    version: 1,
+    aggregate: "teamMessage",
+    schema: z.object({
+      teamMessage: z.object({
+        id: z.string(),
+        agent: z.string(),
+        content: z.string(),
+        confidence: z.number().min(0).max(100).optional(),
+        timestamp: z.number(),
+        broadcast: z.boolean().default(true),
+        recipient: z.string().optional(),
+        sessionID: z.string().optional(),
+      }),
+    }),
+  })
 }

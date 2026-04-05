@@ -25,7 +25,7 @@ import { createSimpleContext } from "./helper"
 import type { Snapshot } from "@/snapshot"
 import { useExit } from "./exit"
 import { useArgs } from "./args"
-import { batch, onMount } from "solid-js"
+import { batch, createMemo, onMount } from "solid-js"
 import { Log } from "@/util/log"
 import type { Path } from "@opencode-ai/sdk"
 import type { Workspace } from "@opencode-ai/sdk/v2"
@@ -75,6 +75,18 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
       vcs: VcsInfo | undefined
       path: Path
       workspaceList: Workspace[]
+      teamMessage: {
+        [id: string]: {
+          id: string
+          agent: string
+          content: string
+          confidence?: number
+          timestamp: number
+          broadcast: boolean
+          recipient?: string
+          sessionID?: string
+        }
+      }
     }>({
       provider_next: {
         all: [],
@@ -103,6 +115,7 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
       vcs: undefined,
       path: { state: "", config: "", worktree: "", directory: "" },
       workspaceList: [],
+      teamMessage: {},
     })
 
     const sdk = useSDK()
@@ -349,6 +362,12 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
           setStore("vcs", { branch: event.properties.branch })
           break
         }
+
+        case "team.message.added": {
+          const msg = event.properties.teamMessage
+          setStore("teamMessage", msg.id, msg)
+          break
+        }
       }
     })
 
@@ -497,6 +516,9 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
         },
         sync: syncWorkspaces,
       },
+      teamMessages: createMemo(() => {
+        return Object.values(store.teamMessage).sort((a, b) => a.timestamp - b.timestamp)
+      }),
       bootstrap,
     }
     return result

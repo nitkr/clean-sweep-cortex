@@ -283,6 +283,19 @@ export namespace MessageV2 {
   })
   export type TeamMessagePart = z.infer<typeof TeamMessagePart>
 
+  export const TeamMessageSchema = z.object({
+    id: PartID.zod,
+    agent: z.string(),
+    content: z.string(),
+    confidence: z.number().min(0).max(100).optional(),
+    timestamp: z.number(),
+    broadcast: z.boolean().default(true),
+    recipient: z.string().optional(),
+    sessionID: SessionID.zod.optional(),
+  })
+
+  export type TeamMessage = z.infer<typeof TeamMessageSchema>
+
   export const ToolStatePending = z
     .object({
       status: z.literal("pending"),
