@@ -1,7 +1,7 @@
 import { Tool } from "./tool"
 import z from "zod"
 import { Session } from "../session"
-import { PartID, MessageID } from "../session/schema"
+import { PartID, MessageID, SessionID } from "../session/schema"
 import { MessageV2 } from "../session/message-v2"
 import { Config } from "../config/config"
 import { SyncEvent } from "@/sync"
@@ -49,10 +49,8 @@ export const TeamTool = Tool.define("team", async () => {
         sessionID: ctx.sessionID,
       }
 
-      // Publish to event bus for real-time sync across all sessions
       SyncEvent.run(SyncEvent.TeamMessageAdded, { teamMessage })
 
-      // Keep existing Session.updatePart for backward compatibility
       const teamPart: MessageV2.TeamMessagePart = {
         id: partID,
         sessionID: ctx.sessionID,
@@ -70,34 +68,73 @@ export const TeamTool = Tool.define("team", async () => {
 
       const spawnSubagent = async (recipient: string) => {
         const agent = await Agent.get(recipient)
-        if (!agent) return
+        if (!agent) return undefined
         const session = await Session.create({
           parentID: ctx.sessionID,
           title: `team message to ${recipient}`,
         })
         const messageID = MessageID.ascending()
-        SessionPrompt.prompt({
-          messageID,
-          sessionID: session.id,
-          model: agent.model,
-          agent: agent.name,
-          parts: [{ type: "text", text: params.content }],
-        })
+        try {
+          const result = await SessionPrompt.prompt({
+            messageID,
+            sessionID: session.id,
+            model: agent.model,
+            agent: agent.name,
+            parts: [{ type: "text", text: params.content }],
+          })
+          const text = result.parts.findLast((x) => x.type === "text")?.text ?? ""
+          return { recipient, text, sessionID: session.id }
+        } catch (err) {
+          const error = err instanceof Error ? err.message : "Unknown error"
+          return { recipient, text: `Error: ${error}`, sessionID: session.id }
+        }
       }
 
+      let responses: { recipient: string; text: string; sessionID: SessionID }[] = []
+
       if (params.action === "message" && params.recipient) {
-        spawnSubagent(params.recipient)
+        const response = await spawnSubagent(params.recipient)
+        if (response) {
+          responses = [response]
+          SyncEvent.run(SyncEvent.TeamMessageAdded, {
+            teamMessage: {
+              id: PartID.ascending(),
+              agent: response.recipient,
+              content: response.text,
+              timestamp: Date.now(),
+              broadcast: false,
+              recipient: ctx.agent,
+              sessionID: response.sessionID,
+            },
+          } as any)
+        }
       } else if (params.action === "broadcast") {
         const agents = await Agent.list()
         const subagents = agents.filter((a) => a.mode !== "primary")
-        subagents.forEach((agent) => spawnSubagent(agent.name))
+        const results = await Promise.all(subagents.map((agent) => spawnSubagent(agent.name)))
+        responses = results.flatMap((r) => (r ? [r] : []))
+        for (const response of responses) {
+          SyncEvent.run(SyncEvent.TeamMessageAdded, {
+            teamMessage: {
+              id: PartID.ascending(),
+              agent: response.recipient,
+              content: response.text,
+              timestamp: Date.now(),
+              broadcast: true,
+              sessionID: response.sessionID,
+            },
+          } as any)
+        }
       }
 
       const action = params.action === "broadcast" ? "broadcast" : `message to ${params.recipient}`
+      const responseSummary =
+        responses.length > 0 ? `\n\nResponses:\n${responses.map((r) => `• ${r.recipient}: ${r.text}`).join("\n")}` : ""
+
       return {
         title: `Team ${params.action}`,
         metadata: {},
-        output: `Message ${action}: ${params.content}`,
+        output: `Message ${action}: ${params.content}${responseSummary}`,
       }
     },
   }
