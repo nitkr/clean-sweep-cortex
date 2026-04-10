@@ -96,6 +96,19 @@ export const TeamTool = Tool.define("team", async () => {
         const response = await spawnSubagent(params.recipient)
         if (response) {
           responses = [response]
+          const responsePart: MessageV2.TeamMessagePart = {
+            id: PartID.ascending(),
+            sessionID: ctx.sessionID,
+            messageID: ctx.messageID,
+            type: "team-message",
+            agent: response.recipient,
+            content: response.text,
+            confidence: undefined,
+            timestamp: Date.now(),
+            broadcast: false,
+            recipient: ctx.agent,
+          }
+          await Session.updatePart(responsePart)
           SyncEvent.run(SyncEvent.TeamMessageAdded, {
             teamMessage: {
               id: PartID.ascending(),
@@ -114,6 +127,18 @@ export const TeamTool = Tool.define("team", async () => {
         const results = await Promise.all(subagents.map((agent) => spawnSubagent(agent.name)))
         responses = results.flatMap((r) => (r ? [r] : []))
         for (const response of responses) {
+          const responsePart: MessageV2.TeamMessagePart = {
+            id: PartID.ascending(),
+            sessionID: ctx.sessionID,
+            messageID: ctx.messageID,
+            type: "team-message",
+            agent: response.recipient,
+            content: response.text,
+            confidence: undefined,
+            timestamp: Date.now(),
+            broadcast: true,
+          }
+          await Session.updatePart(responsePart)
           SyncEvent.run(SyncEvent.TeamMessageAdded, {
             teamMessage: {
               id: PartID.ascending(),
