@@ -81,9 +81,14 @@ export const WorkspaceRouterMiddleware: MiddlewareHandler = async (c) => {
   // Remote workspaces
 
   if (local(c.req.method, url.pathname)) {
-    // No instance provided because we are serving cached data; there
-    // is no instance to work with
-    return routes().fetch(c.req.raw, c.env)
+    // Provide instance context for cached data access (SessionStatus.list etc.)
+    return Instance.provide({
+      directory: workspace.directory ?? directory,
+      init: InstanceBootstrap,
+      async fn() {
+        return routes().fetch(c.req.raw, c.env)
+      },
+    })
   }
 
   const adaptor = await getAdaptor(workspace.type)
