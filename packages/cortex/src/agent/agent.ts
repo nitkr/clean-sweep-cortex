@@ -15,6 +15,7 @@ import PROMPT_SUMMARY from "./prompt/summary.txt"
 import PROMPT_TITLE from "./prompt/title.txt"
 import { Permission } from "@/permission"
 import { mergeDeep, pipe, sortBy, values } from "remeda"
+import { loadTeamAgents } from "./team-agents"
 import { Global } from "@/global"
 import path from "path"
 import { Plugin } from "@/plugin"
@@ -28,7 +29,7 @@ export namespace Agent {
     .object({
       name: z.string(),
       description: z.string().optional(),
-      mode: z.enum(["subagent", "primary", "all"]),
+      mode: z.enum(["subagent", "primary", "all", "team"]),
       native: z.boolean().optional(),
       hidden: z.boolean().optional(),
       topP: z.number().optional(),
@@ -230,6 +231,11 @@ export namespace Agent {
               ),
               prompt: PROMPT_SUMMARY,
             },
+          }
+
+          const teamAgents = loadTeamAgents()
+          for (const [key, value] of Object.entries(teamAgents)) {
+            agents[key] = value
           }
 
           for (const [key, value] of Object.entries(cfg.agent ?? {})) {

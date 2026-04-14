@@ -8,6 +8,7 @@ import { SyncEvent } from "@/sync"
 import { Agent } from "../agent/agent"
 import { SessionPrompt } from "../session/prompt"
 import { defer } from "@/util/defer"
+import { chatroomEventBus } from "../team/chatroom"
 
 export const TeamTool = Tool.define("team", async () => {
   return {
@@ -51,6 +52,15 @@ export const TeamTool = Tool.define("team", async () => {
 
       SyncEvent.run(SyncEvent.TeamMessageAdded, { teamMessage } as any)
 
+      if (params.action === "broadcast") {
+        chatroomEventBus.publish(teamMessage)
+        return {
+          title: "Team Broadcast",
+          metadata: {},
+          output: `Broadcast sent: ${params.content}`,
+        }
+      }
+
       const teamPart: MessageV2.TeamMessagePart = {
         id: partID,
         sessionID: ctx.sessionID,
@@ -60,8 +70,8 @@ export const TeamTool = Tool.define("team", async () => {
         content: params.content,
         confidence: params.confidence,
         timestamp: now,
-        broadcast: params.action === "broadcast",
-        recipient: params.action === "message" ? params.recipient : undefined,
+        broadcast: false,
+        recipient: params.recipient,
       }
 
       await Session.updatePart(teamPart)
@@ -90,76 +100,44 @@ export const TeamTool = Tool.define("team", async () => {
         }
       }
 
-      let responses: { recipient: string; text: string; sessionID: SessionID }[] = []
-
-      if (params.action === "message" && params.recipient) {
-        const response = await spawnSubagent(params.recipient)
-        if (response) {
-          responses = [response]
-          const responsePart: MessageV2.TeamMessagePart = {
-            id: PartID.ascending(),
-            sessionID: ctx.sessionID,
-            messageID: ctx.messageID,
-            type: "team-message",
-            agent: response.recipient,
-            content: response.text,
-            confidence: undefined,
-            timestamp: Date.now(),
-            broadcast: false,
-            recipient: ctx.agent,
-          }
-          await Session.updatePart(responsePart)
-          SyncEvent.run(SyncEvent.TeamMessageAdded, {
-            teamMessage: {
-              id: PartID.ascending(),
-              agent: response.recipient,
-              content: response.text,
-              timestamp: Date.now(),
-              broadcast: false,
-              recipient: ctx.agent,
-              sessionID: response.sessionID,
-            },
-          } as any)
-        }
-      } else if (params.action === "broadcast") {
-        const agents = await Agent.list()
-        const subagents = agents.filter((a) => a.mode !== "primary")
-        const results = await Promise.all(subagents.map((agent) => spawnSubagent(agent.name)))
-        responses = results.flatMap((r) => (r ? [r] : []))
-        for (const response of responses) {
-          const responsePart: MessageV2.TeamMessagePart = {
-            id: PartID.ascending(),
-            sessionID: ctx.sessionID,
-            messageID: ctx.messageID,
-            type: "team-message",
-            agent: response.recipient,
-            content: response.text,
-            confidence: undefined,
-            timestamp: Date.now(),
-            broadcast: true,
-          }
-          await Session.updatePart(responsePart)
-          SyncEvent.run(SyncEvent.TeamMessageAdded, {
-            teamMessage: {
-              id: PartID.ascending(),
-              agent: response.recipient,
-              content: response.text,
-              timestamp: Date.now(),
-              broadcast: true,
-              sessionID: response.sessionID,
-            },
-          } as any)
+      const response = await spawnSubagent(params.recipient!)
+      if (!response) {
+        return {
+          title: "Team Message",
+          metadata: {},
+          output: `Message to ${params.recipient}: ${params.content} (agent not found)`,
         }
       }
 
-      const action = params.action === "broadcast" ? "broadcast" : `message to ${params.recipient}`
-      const responseSummary =
-        responses.length > 0 ? `\n\nResponses:\n${responses.map((r) => `• ${r.recipient}: ${r.text}`).join("\n")}` : ""
+      const responsePart: MessageV2.TeamMessagePart = {
+        id: PartID.ascending(),
+        sessionID: ctx.sessionID,
+        messageID: ctx.messageID,
+        type: "team-message",
+        agent: response.recipient,
+        content: response.text,
+        confidence: undefined,
+        timestamp: Date.now(),
+        broadcast: false,
+        recipient: ctx.agent,
+      }
+      await Session.updatePart(responsePart)
+      SyncEvent.run(SyncEvent.TeamMessageAdded, {
+        teamMessage: {
+          id: PartID.ascending(),
+          agent: response.recipient,
+          content: response.text,
+          timestamp: Date.now(),
+          broadcast: false,
+          recipient: ctx.agent,
+          sessionID: response.sessionID,
+        },
+      } as any)
 
       return {
-        title: `Team ${params.action}`,
+        title: "Team Message",
         metadata: {},
-        output: `Message ${action}: ${params.content}${responseSummary}`,
+        output: `Message to ${params.recipient}: ${params.content}\n\nResponse:\n• ${response.recipient}: ${response.text}`,
       }
     },
   }
