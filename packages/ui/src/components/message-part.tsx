@@ -1459,7 +1459,7 @@ interface TeamMessagePartLocal {
 }
 
 PART_MAPPING["team-message"] = function TeamMessagePartDisplay(props) {
-  const part = () => props.part as TeamMessagePartLocal
+  const part = () => props.part as unknown as TeamMessagePartLocal
 
   const emoji = () => {
     const confidence = part().confidence
