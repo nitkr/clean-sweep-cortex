@@ -3,6 +3,10 @@ import { Log } from "@/util/log"
 import { chatroomEventBus, type TeamMessage } from "./chatroom"
 import { SyncEvent } from "@/sync"
 import { makeRuntime } from "@/effect/run-service"
+import { Session } from "@/session"
+import { SessionPrompt } from "@/session/prompt"
+import { MessageID, SessionID } from "@/session/schema"
+import { Agent } from "@/agent/agent"
 
 export namespace TeamSupervisor {
   const log = Log.create({ service: "team.supervisor" })
@@ -89,7 +93,32 @@ export namespace TeamSupervisor {
 
           SyncEvent.run(SyncEvent.TeamMessageAdded, { teamMessage: msg } as any)
 
-          updateState(agent, AgentState.Listening)
+          setImmediate(async () => {
+            try {
+              const agentInfo = await Agent.get(agent)
+              if (!agentInfo) {
+                log.warn("agent not found for prompt", { agent })
+                return
+              }
+              const session = await Session.create({
+                parentID: SessionID.make(msg.sessionID),
+                title: `team message to ${agent}`,
+              })
+              const messageID = MessageID.ascending()
+              await SessionPrompt.prompt({
+                messageID,
+                sessionID: session.id,
+                model: agentInfo.model,
+                agent: agentInfo.name,
+                parts: [{ type: "text", text: msg.content }],
+              })
+            } catch (err) {
+              const error = err instanceof Error ? err.message : "Unknown error"
+              log.error("agent prompt failed", { agent, error })
+            } finally {
+              updateState(agent, AgentState.Listening)
+            }
+          })
         })
 
         ctx.unsubscribe = unsubscribe
