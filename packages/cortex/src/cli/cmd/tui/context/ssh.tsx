@@ -16,10 +16,10 @@ export interface SSHState {
 export const { use: useSSH, provider: SSHProvider } = createSimpleContext({
   name: "SSH",
   init: (): SSHState => {
-    const [config, setConfig] = createSignal<Awaited<ReturnType<typeof Config.get>> | undefined>(undefined)
+    const [config, setConfig] = createSignal<Awaited<ReturnType<typeof Config.getGlobal>> | undefined>(undefined)
 
     ;(async () => {
-      const cfg = await Config.get()
+      const cfg = await Config.getGlobal()
       setConfig(cfg)
     })()
 
@@ -37,33 +37,33 @@ export const { use: useSSH, provider: SSHProvider } = createSimpleContext({
       connections,
       defaultConnection,
       async add(connection: SSHConnectionConfig) {
-        const cfg = await Config.get()
+        const cfg = await Config.getGlobal()
         const ssh = cfg.ssh ?? {}
         const conns = ssh.connections ?? {}
         conns[connection.name] = connection
-        await Config.update({ ssh: { ...ssh, connections: conns } })
+        await Config.updateGlobal({ ssh: { ...ssh, connections: conns } })
       },
       async update(name: string, connection: SSHConnectionConfig) {
-        const cfg = await Config.get()
+        const cfg = await Config.getGlobal()
         const ssh = cfg.ssh ?? {}
         const conns = ssh.connections ?? {}
         if (conns[name]) {
           conns[name] = connection
-          await Config.update({ ssh: { ...ssh, connections: conns } })
+          await Config.updateGlobal({ ssh: { ...ssh, connections: conns } })
         }
       },
       async remove(name: string) {
-        const cfg = await Config.get()
+        const cfg = await Config.getGlobal()
         const ssh = cfg.ssh ?? {}
         const conns = ssh.connections ?? {}
         delete conns[name]
         const newDefault = ssh.defaultConnection === name ? undefined : ssh.defaultConnection
-        await Config.update({ ssh: { ...ssh, connections: conns, defaultConnection: newDefault } })
+        await Config.updateGlobal({ ssh: { ...ssh, connections: conns, defaultConnection: newDefault } })
       },
       async setDefault(name: string) {
-        const cfg = await Config.get()
+        const cfg = await Config.getGlobal()
         const ssh = cfg.ssh ?? {}
-        await Config.update({ ssh: { ...ssh, defaultConnection: name } })
+        await Config.updateGlobal({ ssh: { ...ssh, defaultConnection: name } })
       },
     }
   },

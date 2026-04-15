@@ -10,10 +10,10 @@ export type SettingsState = {
 export const { use: useSettings, provider: SettingsProvider } = createSimpleContext({
   name: "Settings",
   init: (): SettingsState => {
-    const [config, setConfig] = createSignal<Awaited<ReturnType<typeof Config.get>> | undefined>(undefined)
+    const [config, setConfig] = createSignal<Awaited<ReturnType<typeof Config.getGlobal>> | undefined>(undefined)
 
     ;(async () => {
-      const cfg = await Config.get()
+      const cfg = await Config.getGlobal()
       setConfig(cfg)
     })()
 
@@ -25,10 +25,10 @@ export const { use: useSettings, provider: SettingsProvider } = createSimpleCont
     return {
       enableTeamChatroom,
       async setEnableTeamChatroom(value: boolean) {
-        const cfg = await Config.get()
+        const cfg = await Config.getGlobal()
         const experimental = cfg.experimental ?? {}
-        await Config.update({ experimental: { ...experimental, enable_team_chatroom: value } })
-        const updated = await Config.get()
+        await Config.updateGlobal({ experimental: { ...experimental, enable_team_chatroom: value } })
+        const updated = await Config.getGlobal()
         setConfig(updated)
       },
     }
