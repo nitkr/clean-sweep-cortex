@@ -1,13 +1,8 @@
 import { Tool } from "./tool"
 import z from "zod"
-import { Session } from "../session"
-import { PartID, MessageID, SessionID } from "../session/schema"
-import { MessageV2 } from "../session/message-v2"
+import { PartID } from "../session/schema"
 import { Config } from "../config/config"
 import { SyncEvent } from "@/sync"
-import { Agent } from "../agent/agent"
-import { SessionPrompt } from "../session/prompt"
-import { defer } from "@/util/defer"
 import { chatroomEventBus } from "../team/chatroom"
 
 export const TeamTool = Tool.define("team", async () => {
@@ -23,7 +18,7 @@ export const TeamTool = Tool.define("team", async () => {
     async execute(params, ctx) {
       const config = await Config.get()
 
-      if (!config.experimental?.enable_team_chatroom) {
+      if (config.experimental?.enable_team_chatroom === false) {
         return {
           title: "Team Chatroom Disabled",
           metadata: {},
@@ -52,92 +47,14 @@ export const TeamTool = Tool.define("team", async () => {
 
       SyncEvent.run(SyncEvent.TeamMessageAdded, { teamMessage } as any)
 
-      if (params.action === "broadcast") {
-        chatroomEventBus.publish(teamMessage)
-        return {
-          title: "Team Broadcast",
-          metadata: {},
-          output: `Broadcast sent: ${params.content}`,
-        }
-      }
-
-      const teamPart: MessageV2.TeamMessagePart = {
-        id: partID,
-        sessionID: ctx.sessionID,
-        messageID: ctx.messageID,
-        type: "team-message",
-        agent: ctx.agent,
-        content: params.content,
-        confidence: params.confidence,
-        timestamp: now,
-        broadcast: false,
-        recipient: params.recipient,
-      }
-
-      await Session.updatePart(teamPart)
-
-      const spawnSubagent = async (recipient: string) => {
-        const agent = await Agent.get(recipient)
-        if (!agent) return undefined
-        const session = await Session.create({
-          parentID: ctx.sessionID,
-          title: `team message to ${recipient}`,
-        })
-        const messageID = MessageID.ascending()
-        try {
-          const result = await SessionPrompt.prompt({
-            messageID,
-            sessionID: session.id,
-            model: agent.model,
-            agent: agent.name,
-            parts: [{ type: "text", text: params.content }],
-          })
-          const text = result.parts.findLast((x) => x.type === "text")?.text ?? ""
-          return { recipient, text, sessionID: session.id }
-        } catch (err) {
-          const error = err instanceof Error ? err.message : "Unknown error"
-          return { recipient, text: `Error: ${error}`, sessionID: session.id }
-        }
-      }
-
-      const response = await spawnSubagent(params.recipient!)
-      if (!response) {
-        return {
-          title: "Team Message",
-          metadata: {},
-          output: `Message to ${params.recipient}: ${params.content} (agent not found)`,
-        }
-      }
-
-      const responsePart: MessageV2.TeamMessagePart = {
-        id: PartID.ascending(),
-        sessionID: ctx.sessionID,
-        messageID: ctx.messageID,
-        type: "team-message",
-        agent: response.recipient,
-        content: response.text,
-        confidence: undefined,
-        timestamp: Date.now(),
-        broadcast: false,
-        recipient: ctx.agent,
-      }
-      await Session.updatePart(responsePart)
-      SyncEvent.run(SyncEvent.TeamMessageAdded, {
-        teamMessage: {
-          id: PartID.ascending(),
-          agent: response.recipient,
-          content: response.text,
-          timestamp: Date.now(),
-          broadcast: false,
-          recipient: ctx.agent,
-          sessionID: response.sessionID,
-        },
-      } as any)
-
+      chatroomEventBus.publish(teamMessage)
       return {
-        title: "Team Message",
+        title: params.action === "broadcast" ? "Team Broadcast" : "Team Message",
         metadata: {},
-        output: `Message to ${params.recipient}: ${params.content}\n\nResponse:\n• ${response.recipient}: ${response.text}`,
+        output:
+          params.action === "broadcast"
+            ? `Broadcast sent: ${params.content}`
+            : `Message sent to ${params.recipient}: ${params.content}`,
       }
     },
   }
