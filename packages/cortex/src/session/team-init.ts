@@ -1,6 +1,5 @@
 import { SyncEvent } from "@/sync"
 import { Session } from "./index"
-import { Config } from "@/config/config"
 import { TeamSupervisor } from "@/team/supervisor"
 
 const TEAM_AGENTS = [
@@ -26,10 +25,7 @@ const TEAM_AGENTS = [
 ]
 
 export default [
-  SyncEvent.project(Session.Event.Created, async (db, data) => {
-    const cfg = await Config.get()
-    if (!cfg.experimental?.enable_team_chatroom) return
-
+  SyncEvent.project(Session.Event.Created, (db, data) => {
     const sessionID = data.sessionID
 
     for (const agentName of TEAM_AGENTS) {
