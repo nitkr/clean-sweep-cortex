@@ -1385,7 +1385,7 @@ export namespace Config {
 
           for (const dir of unique(directories)) {
             if (dir.endsWith(".opencode") || dir === Flag.OPENCODE_CONFIG_DIR) {
-              for (const file of ["cortex.jsonc", "cortex.json"]) {
+              for (const file of ["cortex.jsonc", "cortex.json", "opencode.jsonc", "opencode.json"]) {
                 log.debug(`loading config from ${path.join(dir, file)}`)
                 result = mergeConfigConcatArrays(result, yield* loadFile(path.join(dir, file)))
                 result.agent ??= {}
