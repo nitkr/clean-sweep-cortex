@@ -2,8 +2,9 @@ import { Permission } from "@/permission"
 import { Agent } from "./agent"
 import path from "path"
 import fs from "fs"
-import { Global } from "@/global"
 import { Config } from "@/config/config"
+
+const agentsDir = path.join(import.meta.dirname, "..", "..", "..", "..", "agents")
 
 function parseFrontmatter(content: string): {
   name: string
@@ -95,7 +96,6 @@ const AGENT_SUBDIRS: Record<string, string> = {
 }
 
 export function loadTeamAgents(): Record<string, Agent.Info> {
-  const agentsDir = path.join(Global.Path.home, "myprojects", "cleansweep-cortex", "agents")
   const result: Record<string, Agent.Info> = {}
 
   const defaults = Permission.fromConfig({
